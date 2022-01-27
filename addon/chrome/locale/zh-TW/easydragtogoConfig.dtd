@@ -1,0 +1,78 @@
+﻿<!ENTITY easydragtogo.config.title              "Easy DragToGo+ 設定">
+
+<!ENTITY dialogButton.rstDefault                "恢復預設設定">
+
+<!ENTITY gesture.menu.width                     "340px">
+<!ENTITY gesture.menuSearch.width               "200px">
+<!ENTITY gesture.menuEngine.width               "120px">
+
+<!-- Gestures -->
+<!ENTITY settings.link                          "鏈結">
+<!ENTITY settings.text                          "文字">
+<!ENTITY settings.img                           "圖片">
+
+<!ENTITY settings.text-gesture-label            "拖動選取文字的手勢">
+<!ENTITY settings.link-gesture-label            "拖動鏈結的手勢">
+<!ENTITY settings.img-gesture-label             "拖動圖片的手勢">
+
+<!ENTITY settings.direction                     "設定手勢方向：">
+<!ENTITY gesture.label                          "分別設定手勢：">
+<!ENTITY settings.search-engine                 "引擎: ">
+<!ENTITY settings.text-direction-any            "任意:">
+<!ENTITY settings.text-direction-up             "上:">
+<!ENTITY settings.text-direction-down           "下:">
+<!ENTITY settings.text-direction-right          "右:">
+<!ENTITY settings.text-direction-left           "左:">
+
+<!ENTITY settings.link-fg                       "在前景新分頁中打開鏈結">
+<!ENTITY settings.link-bg                       "在背景新分頁中打開鏈結">
+<!ENTITY settings.link-cur                      "在目前分頁中打開鏈結">
+<!ENTITY settings.save-link                     "鏈結另存為...">
+
+<!ENTITY linkFromContentOuter.label             "從窗口外面拖進來的鏈結">
+
+<!ENTITY settings.search-fg                     "在前景新分頁中搜尋">
+<!ENTITY settings.search-bg                     "在背景新分頁中搜尋">
+<!ENTITY settings.search-cur                    "在目前分頁中搜尋">
+
+<!ENTITY settings.search-find                   "在當前頁字並高亮">
+<!ENTITY settings.search-site                    "在前臺新建標簽頁中站內搜索">
+<!ENTITY settings.search-list                    "選擇搜尋引擎(前臺)">
+<!ENTITY settings.search-savetext                    "另存為文本文件">
+<!ENTITY settings.search-copyToClipboard                    "復制文本">
+
+
+<!ENTITY settings.engine-current                "目前">
+<!ENTITY settings.engine-default                "預設">
+
+<!ENTITY textFromContentOuter.label             "從視窗外拖拽來的檔['無動作':即由Firefox來處理]">
+
+<!ENTITY settings.img-fg                        "在前景新分頁中打開圖片">
+<!ENTITY settings.img-bg                        "在背景新分頁中打開圖片">
+<!ENTITY settings.img-cur                       "在目前分頁中打開圖片">
+<!ENTITY settings.save-img                      "圖片另存為...">
+<!ENTITY settings.save-df-img                   "儲存圖片到特定資料夾1">
+<!ENTITY settings.save-df-img2                   "儲存圖片到特定資料夾2">
+<!ENTITY settings.save-df-img3                   "儲存圖片到特定資料夾3">
+<!ENTITY settings.save-df-img4                   "儲存圖片到特定資料夾4">
+<!ENTITY settings.save-df-dir                   "資料夾1:">
+<!ENTITY settings.save-df-dir2                   "資料夾2:">
+<!ENTITY settings.save-df-dir3                   "資料夾3:">
+<!ENTITY settings.save-df-dir4                   "資料夾4:">
+<!ENTITY settings.img-searchfg                   "Google.com搜索相似圖片(前臺)">
+<!ENTITY settings.img-searchbg                   "Google.com搜索相似圖片(後臺)">
+
+<!ENTITY settings.do-nothing                    "無動作">
+
+<!ENTITY imgSaveFloder.label                    "儲存圖片的資料夾(提示:輸入“u”則保存到Firefox子目錄“defaults”下,常用於U盤版Firefox)">
+<!ENTITY floderBrowse                           "瀏覽">
+<!ENTITY saveDomainName.label                   "儲存圖片時按目前網頁域名自動創建子資料夾">
+<!ENTITY saveByDatetime.label                   "保存圖片時文件名前增加當前日期(YYYY-MM-dd)">
+
+<!ENTITY EasydragtogoToSet.label            "拖拽設置">
+<!ENTITY dragtogoEmailSearch.label                   "拖拽內容為Email地址時使用搜索(否則發送Email)">
+<!ENTITY pref.Timeout "拖拽延時取消(值為整數值,0不開啟,單位ms):">
+<!ENTITY FirefoxTabOpen.label  "按照browser.tabs.insertRelatedAfterCurrent設置新建Tab位置(否則強制最右新建Tab)">
+
+
+<!ENTITY settings.link-tooltips.label            "拖拽提示:拖拽連結時按下Ctrl鍵當作文本拖拽。">

@@ -1,0 +1,236 @@
+﻿<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://easydragtogo/skin/easydragtogo.css" type="text/css"?>
+
+<!DOCTYPE dialog SYSTEM "chrome://easydragtogo/locale/easydragtogoConfig.dtd">
+
+<!--  Code from Drag De Go, modifided by Sunwan.  -->
+
+<dialog id="easydragtogoConfig"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    dlgbuttons="accept,cancel,extra1"
+    buttonlabelextra1="&dialogButton.rstDefault;"
+    onload="easyDragSettings.onLoad();"
+    ondialogaccept="return easyDragSettings.onAccept();"
+    ondialogextra1="easyDragSettings.rstDefault();"
+    title="&easydragtogo.config.title;">  
+
+    <script type="application/x-javascript" src="chrome://easydragtogo/content/easydragtogoConfig.js"/>
+    <script type="application/x-javascript" src="chrome://easydragtogo/content/utils.js"/>
+
+    <tabbox flex="1">
+      <tabs>
+        <tab label="&settings.text;"/>
+        <tab label="&settings.link;"/>
+        <tab label="&settings.img;"/>
+      </tabs>
+
+      <tabpanels flex="1">
+        <tabpanel orient="vertical">
+          <groupbox>
+            <caption>
+              <label>&settings.text-gesture-label;</label>
+            </caption>
+            <label value="&settings.direction;"/>
+            <hbox class="easydragtogo-Direction" id="direction-text" _mId="text"/>
+            <separator class="groove"/>
+            <label value="&gesture.label;"/>
+            <grid>
+              <columns>
+                <column flex="1"/>
+                <column/>
+              </columns>
+              <rows>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-any;"/>
+                  <hbox class="gMenuList" id="text-edg-any" _Type="text" minwidth="&gesture.menu.width;"/>
+                </row>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-up;"/>
+                  <hbox class="gMenuList" id="text-edg-up" _Type="text" minwidth="&gesture.menu.width;"/>
+                </row>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-down;"/>
+                  <hbox class="gMenuList" id="text-edg-down" _Type="text" minwidth="&gesture.menu.width;"/>
+                </row>
+                
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-left;"/>
+                  <hbox class="gMenuList" id="text-edg-left" _Type="text" minwidth="&gesture.menu.width;"/>
+                </row>
+
+		<row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-right;"/>
+                  <hbox class="gMenuList" id="text-edg-right" _Type="text" minwidth="&gesture.menu.width;"/>
+                </row>
+              </rows>
+            </grid>
+          </groupbox>
+
+          <groupbox id="textFromOuter">
+            <caption label="&textFromContentOuter.label;"/>
+              <row class="easydragtogo-Menu">
+                <space flex="1"/>
+                <hbox class="gMenuList" id="textFromContentOuter" _Type="text" minwidth="&gesture.menu.width;"/>
+              </row>
+          </groupbox>
+
+	   <groupbox id="EasydragtogoToSet">
+            <caption label="&EasydragtogoToSet.label;"/>
+              <row class="easydragtogo-Menu">
+                 <hbox align="center">
+              	<label id="lblTimeout" value="&pref.Timeout;" /><textbox id="EasydragtogoTimeout-text"  flex="1"/>
+            </hbox>
+              </row>
+	       <separator class="groove"/>
+       <row class="easydragtogo-Menu">
+	        <hbox align="center">
+		 <checkbox id="FirefoxTabOpen" label="&FirefoxTabOpen.label;"/>
+            </hbox>
+	     </row>
+ <separator class="groove"/>
+       <row class="easydragtogo-Menu">
+	        <hbox align="center">
+		 <checkbox id="dragtogoEmailSearch" label="&dragtogoEmailSearch.label;"/>
+            </hbox>
+	     </row>
+          </groupbox>
+        </tabpanel>
+
+        <tabpanel orient="vertical">
+          <groupbox>
+            <caption>
+              <label>&settings.link-gesture-label;</label>
+            </caption>
+            <label value="&settings.direction;"/>
+            <hbox class="easydragtogo-Direction" id="direction-link" _mId="link"/>
+            <separator class="groove"/>
+            <label value="&gesture.label;"/>
+            <grid>
+              <columns>
+                <column flex="1"/>
+                <column/>
+              </columns>
+              <rows>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-any;"/>
+                  <hbox class="gMenuList" id="link-edg-any" _Type="link" minwidth="&gesture.menu.width;"/>
+                </row>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-up;"/>
+                  <hbox class="gMenuList" id="link-edg-up" _Type="link" minwidth="&gesture.menu.width;"/>
+                </row>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-down;"/>
+                  <hbox class="gMenuList" id="link-edg-down" _Type="link" minwidth="&gesture.menu.width;"/>
+                </row>
+
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-left;"/>
+                  <hbox class="gMenuList" id="link-edg-left" _Type="link" minwidth="&gesture.menu.width;"/>
+                </row>                
+		
+		<row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-right;"/>
+                  <hbox class="gMenuList" id="link-edg-right" _Type="link" minwidth="&gesture.menu.width;"/>
+                </row>
+              </rows>
+            </grid>
+          </groupbox>
+
+          <groupbox id="linkFromOuter">
+            <caption label="&linkFromContentOuter.label;"/>
+              <row class="easydragtogo-Menu">
+                <space flex="1"/>
+                <hbox class="gMenuList" id="linkFromContentOuter" _Type="link" minwidth="&gesture.menu.width;"/>
+              </row>
+          </groupbox>
+
+	   <label value="&settings.link-tooltips.label;"/>
+        </tabpanel>
+
+
+        <tabpanel orient="vertical">
+          <groupbox>
+            <caption>
+              <label>&settings.img-gesture-label;</label>
+            </caption>
+            <label value="&settings.direction;"/>
+            <hbox class="easydragtogo-Direction" id="direction-img" _mId="img"/>
+            <separator class="groove"/>
+            <label value="&gesture.label;"/>
+            <grid>
+              <columns>
+                <column flex="1"/>
+                <column/>
+              </columns>
+              <rows>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-any;"/>
+                  <hbox class="gMenuList" id="img-edg-any" _Type="image" minwidth="&gesture.menu.width;"/>
+                </row>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-up;"/>
+                  <hbox class="gMenuList" id="img-edg-up" _Type="image" minwidth="&gesture.menu.width;"/>
+                </row>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-down;"/>
+                  <hbox class="gMenuList" id="img-edg-down" _Type="image" minwidth="&gesture.menu.width;"/>
+                </row>
+                <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-left;"/>
+                  <hbox class="gMenuList" id="img-edg-left" _Type="image" minwidth="&gesture.menu.width;"/>
+                </row>
+		        <row class="easydragtogo-Menu">
+                  <label value="&settings.text-direction-right;"/>
+                  <hbox class="gMenuList" id="img-edg-right" _Type="image" minwidth="&gesture.menu.width;"/>
+                </row>
+              </rows>
+            </grid>
+          </groupbox>
+
+          <groupbox id="imgfloder">
+            <caption label="&imgSaveFloder.label;"/>
+            <hbox align="center">
+			  <label value="&settings.save-df-dir;"/>
+              <textbox id="imgSaveFloder-text"  flex="1"/>
+              <button id="imgSaveFloder-browserButton" label="&floderBrowse;"
+                    oncommand="easyDragSettings.browseDir('')" />
+            </hbox>		
+			<hbox align="center">
+             <label value="&settings.save-df-dir2;"/>  
+			 <textbox id="imgSaveFloder-text_2"  flex="1"/>
+             <button id="imgSaveFloder-browserButton_2" label="&floderBrowse;"
+                    oncommand="easyDragSettings.browseDir('_2')" />
+            </hbox>
+			<hbox align="center">
+			  <label value="&settings.save-df-dir3;"/>
+              <textbox id="imgSaveFloder-text_3"  flex="1"/>
+              <button id="imgSaveFloder-browserButton_3" label="&floderBrowse;"
+                    oncommand="easyDragSettings.browseDir('_3')" />
+            </hbox>
+			<hbox align="center">
+			  <label value="&settings.save-df-dir4;"/>
+              <textbox id="imgSaveFloder-text_4"  flex="1"/>
+              <button id="imgSaveFloder-browserButton_4" label="&floderBrowse;"
+                    oncommand="easyDragSettings.browseDir('_4')" />
+            </hbox>
+            <hbox align="center">
+              <checkbox id="saveDomainName" label="&saveDomainName.label;"/>
+            </hbox>
+	    <hbox align="center">
+             <checkbox id="saveByDatetime" label="&saveByDatetime.label;"/>
+            </hbox>
+          </groupbox>
+        </tabpanel>
+      </tabpanels>
+    </tabbox>
+
+    <hbox id="dialogButtons">
+      <button dlgtype="extra1" id="myDefault"/>
+      <spacer flex="1" />
+      <button dlgtype="accept" id="myAccept" />
+      <button dlgtype="cancel" id="myCancel" />
+    </hbox>
+</dialog>

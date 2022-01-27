@@ -1,0 +1,112 @@
+Manifest-Version: 1.0
+
+Name: install.rdf
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: UkCFTJjjWL3vBc26zfORfg==
+SHA1-Digest: 2z5fgwJkyjewX1W5wFAUAbcmZRc=
+
+Name: chrome.manifest
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: makoqNCjV9SYcXlWUhJn7A==
+SHA1-Digest: B/MdTCTbE1prmmfpMnMT2qMOGSU=
+
+Name: easydragtogoBinding.xml
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: YrNG71USXMge2WWUhGpqsg==
+SHA1-Digest: eeZmaOD1cUTVcCpieOd9UDXXUqQ=
+
+Name: chrome/content/easydragtogo.bak.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: uR8A06raYxns48zxqFqvmw==
+SHA1-Digest: sHLc/Jh/oP4W0cAodvAywa4p5pA=
+
+Name: chrome/content/easydragtogo.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: CRoTods+SC94mpFhOoYjtg==
+SHA1-Digest: QaEboB0pH+oX7cBjDUxSbvnMqwQ=
+
+Name: chrome/content/easydragtogoBinding.xml
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: YrNG71USXMge2WWUhGpqsg==
+SHA1-Digest: eeZmaOD1cUTVcCpieOd9UDXXUqQ=
+
+Name: chrome/content/easydragtogoConfig.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: BSEw7iMjRqHXO25RgHkx/Q==
+SHA1-Digest: t2pC5guxaLpR9zffEfl3E+fXfyI=
+
+Name: chrome/content/easydragtogoConfig.xul
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: U+1o9gN6djGFvSiCcBq9Aw==
+SHA1-Digest: m4UN2IKus/hOQJ/cKLN8dF+rYG0=
+
+Name: chrome/content/easydragtogoOverlay.xul
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: DA+UTPh2iBgAy8ZogtFzZg==
+SHA1-Digest: 7Tjlu4tU33GUlTSffkj2Hxq2Z0Y=
+
+Name: chrome/content/utils.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: KWa/eucv2Vp+zvfAU6NjwQ==
+SHA1-Digest: y1Te0SGN25S1HKuUYNO3le1FV1k=
+
+Name: chrome/locale/de/easydragtogoConfig.dtd
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: mau+avcjfV6RrkT7qV26UA==
+SHA1-Digest: h+6yqMEDpZlyvVURFObpU1IeQmM=
+
+Name: chrome/locale/en-US/easydragtogoConfig.dtd
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: rZpuBtYCGLBc5kTq4jU0IQ==
+SHA1-Digest: XeirEXM6gQkmHZLslPX7OYyS9G8=
+
+Name: chrome/locale/zh-CN/easydragtogoConfig.dtd
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: STbgcxb/UHx4S16FDc7uKA==
+SHA1-Digest: jdCJVsdyVkeVFRGAJZ216TxYt78=
+
+Name: chrome/locale/zh-TW/easydragtogoConfig.dtd
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: ZslJi5ndMNH0yUwGRXS9MQ==
+SHA1-Digest: UGG7O16ZpI+Kpdxu/uBOteWy7KQ=
+
+Name: chrome/skin/classic/directions_any.png
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: i4OLRDaF5ZVn6/ia8nbWQQ==
+SHA1-Digest: ZXXhEaYIFNrb2VqrQgW21b1jWnA=
+
+Name: chrome/skin/classic/directions_none.png
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: OoYGhMDWdWk1fMX6xvBpGg==
+SHA1-Digest: 7zJ2nxfq2YHc3rEgacYX7jCoMhs=
+
+Name: chrome/skin/classic/directions_rl.png
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: Uu1hVoD4oE6WDvmvILCXZg==
+SHA1-Digest: HfJcQj2y50uCI1K7ehEQm4VFIzM=
+
+Name: chrome/skin/classic/directions_rlud.png
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: KiueW94xi+pmyUcFH/8Hig==
+SHA1-Digest: qo50tqpwtGek4LuU8zMinwzir5o=
+
+Name: chrome/skin/classic/directions_ud.png
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: /mwOlCy1tkzKfwkU4zwy8g==
+SHA1-Digest: mtwxsbhfTywEv5uqiN45kEV777Y=
+
+Name: chrome/skin/classic/easydragtogo.css
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: vpuul/3QFRi85dl/PVJ49A==
+SHA1-Digest: aD15DrKFzJWSuADDwOCCH5jB3dQ=
+
+Name: chrome/skin/classic/easydragtogo.png
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: mhLCjY/n8fE/avl9Ca49rQ==
+SHA1-Digest: sM9ZP/s8IyUpxne0BNnxbQa1gug=
+
+Name: defaults/preferences/easydragtogo.js
+Digest-Algorithms: MD5 SHA1
+MD5-Digest: F24qNwWUH6HdEOGvjxsI+A==
+SHA1-Digest: 1psjwYcbI3KHQqz+3QlxWDomduE=
+

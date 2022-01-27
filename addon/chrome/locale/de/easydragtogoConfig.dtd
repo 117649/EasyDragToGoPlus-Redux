@@ -1,0 +1,78 @@
+﻿<!ENTITY easydragtogo.config.title              "Easy DragToGo+ Einstellungen">
+
+<!ENTITY dialogButton.rstDefault                "Standardeinstellungen">
+
+<!ENTITY gesture.menu.width                     "340px">
+<!ENTITY gesture.menuSearch.width               "220px">
+<!ENTITY gesture.menuEngine.width               "130px">
+
+<!-- Gestures -->
+<!ENTITY settings.link                          "Links">
+<!ENTITY settings.text                          "Text">
+<!ENTITY settings.img                           "Bilder">
+
+<!ENTITY settings.text-gesture-label            "Aktionen für das Verschieben von Text">
+<!ENTITY settings.link-gesture-label            "Aktionen für das Verschieben von Links">
+<!ENTITY settings.img-gesture-label             "Aktionen für das Verschieben von Bildern">
+
+<!ENTITY settings.direction                     "Mausgesten auswählen:">
+<!ENTITY gesture.label                          "Einstellungen für jede Mausgeste:">
+<!ENTITY settings.search-engine                 "Suchmaschine:">
+<!ENTITY settings.text-direction-any            "Beliebige Richtung:">
+<!ENTITY settings.text-direction-up             "Nach oben:">
+<!ENTITY settings.text-direction-down           "Nach unten:">
+<!ENTITY settings.text-direction-right          "Nach rechts:">
+<!ENTITY settings.text-direction-left           "Nach links:">
+
+<!ENTITY settings.link-fg                       "Öffne Links in neuem Vordergrundtab">
+<!ENTITY settings.link-bg                       "Öffne Links in neuem Hintergrundtab">
+<!ENTITY settings.link-cur                      "Öffne Links im aktuellen Tab">
+<!ENTITY settings.save-link                     "Links speichern als...">
+
+<!ENTITY linkFromContentOuter.label             "Links von außerhalb des Browsers">
+
+<!ENTITY settings.search-fg                     "Suche in neuem Vordergrundtab">
+<!ENTITY settings.search-bg                     "Suche in neuem Hintergrundtab">
+<!ENTITY settings.search-cur                    "Suche im aktuellen Tab">
+
+<!ENTITY settings.search-find                   "Finde und markiere Text in aktueller Seite">
+<!ENTITY settings.search-site                    "Durchsuche Seite mit Suchmaschine">
+<!ENTITY settings.search-list                    "Wählen Sie Search Engine">
+<!ENTITY settings.search-savetext                    "Speichern als Textdatei">
+<!ENTITY settings.search-copyToClipboard                    "In die Zwischenablage kopieren">
+
+
+<!ENTITY settings.engine-current                "Aktuelle ">
+<!ENTITY settings.engine-default                "Standard ">
+
+<!ENTITY textFromContentOuter.label             "Text von außerhalb des Browsers">
+
+<!ENTITY settings.img-fg                        "Öffne Bilder in neuem Vordergrundtab">
+<!ENTITY settings.img-bg                        "Öffne Bilder in neuem Hintergrundtab">
+<!ENTITY settings.img-cur                       "Öffne Bilder im aktuellen Tab">
+<!ENTITY settings.save-img                      "Bilder speichern unter...">
+<!ENTITY settings.save-df-img                   "Bilder direkt in Ordner 1 speichern">
+<!ENTITY settings.save-df-img2                   "Bilder direkt in Ordner 2 speichern">
+<!ENTITY settings.save-df-img3                   "Bilder direkt in Ordner 3 speichern">
+<!ENTITY settings.save-df-img4                   "Bilder direkt in Ordner 4 speichern">
+<!ENTITY settings.save-df-dir                   "Ordner 1:">
+<!ENTITY settings.save-df-dir2                   "Ordner 2:">
+<!ENTITY settings.save-df-dir3                   "Ordner 3:">
+<!ENTITY settings.save-df-dir4                   "Ordner 4:">
+<!ENTITY settings.img-searchfg                   "Google.com Suche nach ähnlichen Bildern in neuem Vordergrundtab">
+<!ENTITY settings.img-searchbg                   "Google.com Suche nach ähnlichen Bildern in neuem Hintergrundtab">
+
+<!ENTITY settings.do-nothing                    "Keine Aktion">
+
+<!ENTITY imgSaveFloder.label                    "Bilder speichern in">
+<!ENTITY floderBrowse                           "Durchsuchen">
+<!ENTITY saveDomainName.label                   "Erstelle automatisch ein Unterverzeichnis mit dem Domainnamen">
+<!ENTITY saveByDatetime.label                   "Dateiname um aktuelles Datum erweitern (JJJJ-MM-TT)">
+
+<!ENTITY EasydragtogoToSet.label            "Weitere Einstellungen">
+<!ENTITY dragtogoEmailSearch.label                   "Auch nach E-Mail Adressen suchen">
+<!ENTITY pref.Timeout "Aktion abbrechen nach (Millisekunden):">
+<!ENTITY FirefoxTabOpen.label  "Neue Tabs immer ans Ende stellen">
+
+
+<!ENTITY settings.link-tooltips.label            "Tip: Bei gedrückter Strg-Taste werden Links als Text behandelt.">

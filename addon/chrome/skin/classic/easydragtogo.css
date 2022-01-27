@@ -1,0 +1,36 @@
+﻿groupbox{
+    margin: 0px 0px 10px 0px !important;
+    padding: 5px !important;
+}
+radio.direc-four, radio.direc-four hbox.radio-label-box{
+    list-style-image: url("directions_rlud.png") !important;;
+}
+radio.direc-rl, radio.direc-rl hbox.radio-label-box{
+    list-style-image: url("directions_rl.png") !important;;
+}
+radio.direc-ud, radio.direc-ud hbox.radio-label-box{
+    list-style-image: url("directions_ud.png") !important;;
+}
+radio.direc-none, radio.direc-none hbox.radio-label-box{
+    list-style-image: url("directions_none.png") !important;;
+}
+radio.direc-any, radio.direc-any hbox.radio-label-box{
+    list-style-image: url("directions_any.png") !important;;
+}
+menulist.easydragtogo-Menu{
+    -moz-box-flex:1;
+}
+row.easydragtogo-Menu{
+    height: 27px;
+    margin:2px 5px !important;
+    -moz-box-align:center;
+}
+hbox.easydragtogo-Menu{
+    -moz-box-align:center;
+}
+hbox.gMenuList {
+    -moz-binding: url('chrome://easydragtogo/content/easydragtogoBinding.xml#gMenuList');
+} 
+hbox.easydragtogo-Direction {
+    -moz-binding: url('chrome://easydragtogo/content/easydragtogoBinding.xml#easydragtogo-Direction');
+}

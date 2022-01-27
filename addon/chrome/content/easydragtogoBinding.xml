@@ -1,0 +1,194 @@
+﻿<?xml version="1.0"?>
+<!DOCTYPE dialog [
+  <!ENTITY % settingsDTD SYSTEM "chrome://easydragtogo/locale/easydragtogoConfig.dtd"> %settingsDTD;
+]>
+
+<!--  Code from Drag De Go, modifided by Sunwan.  -->
+
+<bindings id="easydragtogoBindings"
+    xmlns="http://www.mozilla.org/xbl"
+    xmlns:xbl="http://www.mozilla.org/xbl"
+    xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <binding id="gMenuList" extends="chrome://easydragtogo/content/easydragtogoBinding.xml#gMenuFunc">
+    <content>
+      <xul:menulist class="easydragtogo-Menu" minwidth="&gesture.menuSearch.width;">
+        <xul:menupopup maxheight="250px">
+          <xul:menuitem value="link-fg" label="&settings.link-fg;"/>
+          <xul:menuitem value="link-bg" label="&settings.link-bg;"/>
+          <xul:menuitem value="link-cur" label="&settings.link-cur;"/>
+          <xul:menuitem value="save-link" label="&settings.save-link;"/>
+          <xul:menuitem value="search-fg" label="&settings.search-fg;"/>
+          <xul:menuitem value="search-bg" label="&settings.search-bg;"/>
+          <xul:menuitem value="search-cur" label="&settings.search-cur;"/>
+	      <xul:menuitem value="search-find" label="&settings.search-find;"/>
+	      <xul:menuitem value="search-site" label="&settings.search-site;"/>
+		  <xul:menuitem value="search-list" label="&settings.search-list;"/>
+		  <xul:menuitem value="search-savetext" label="&settings.search-savetext;"/>
+		     <xul:menuitem value="search-copyToClipboard" label="&settings.search-copyToClipboard;"/>
+          <xul:separator class="groove"/>
+          <xul:menuitem value="img-fg" label="&settings.img-fg;"/>
+          <xul:menuitem value="img-bg" label="&settings.img-bg;"/>
+          <xul:menuitem value="img-cur" label="&settings.img-cur;"/>
+		  <xul:menuitem value="img-searchfg" label="&settings.img-searchfg;"/>
+		  <xul:menuitem value="img-searchbg" label="&settings.img-searchbg;"/>
+          <xul:menuitem value="save-img" label="&settings.save-img;"/>
+          <xul:menuitem value="save-df-img" label="&settings.save-df-img;"/>
+		  <xul:menuitem value="save-df-img2" label="&settings.save-df-img2;"/>
+		  <xul:menuitem value="save-df-img3" label="&settings.save-df-img3;"/>
+		  <xul:menuitem value="save-df-img4" label="&settings.save-df-img4;"/>
+          <xul:separator class="groove"/>
+          <xul:menuitem value="do-nothing" label="&settings.do-nothing;"/>
+        </xul:menupopup>
+      </xul:menulist>
+      <xul:hbox class="easydragtogo-Menu">
+        <xul:label value="&settings.search-engine;"/>
+        <xul:menulist class="easydragtogo-Menu" minwidth="&gesture.menuEngine.width;">
+          <xul:menupopup maxheight="250px" onpopupshowing="easyDragSettings.createEnginesList(this);">
+            <xul:menuitem value="c" label="&settings.engine-current;"/>
+            <xul:menuitem value="d" label="&settings.engine-default;"/>
+            <xul:separator class="groove"/>
+          </xul:menupopup>
+        </xul:menulist>
+      </xul:hbox>
+    </content>
+  </binding>
+
+  <binding id="gMenuFunc">
+    <implementation>
+      <constructor><![CDATA[
+          var pref = Components.classes['@mozilla.org/preferences-service;1'].
+                getService(Components.interfaces.nsIPrefService).getBranch("extensions.easydragtogo.custom.");
+          var prefNames = pref.getChildList( "", {} );
+          if (prefNames[0] || prefNames.length > 1) {
+            var popup = document.getAnonymousNodes(this)[0].childNodes[0];
+            var m = popup.appendChild(document.createElement("menuseparator"));
+            m.setAttribute("class", "groove");
+          }
+          for each (var aPref in prefNames) {
+            if (aPref) {
+              m = popup.appendChild(popup.childNodes[0].cloneNode(true));
+              m.setAttribute("value", "custom#" + aPref);
+              m.setAttribute("label", "Custom: " + aPref);
+            }
+          }
+
+          var mItems = document.getAnonymousNodes(this)[0].childNodes[0].childNodes;
+          var sItems = [];
+          for each (var mItem in mItems) {
+            var mValue = mItem.value;
+            if(mValue) {
+              if(mValue.indexOf("custom#")>=0) mItem.hidden = false;
+              else if(mValue.indexOf("link")>=0) mItem.hidden = this._Type == "text";
+              else if(mValue.indexOf("search-")>=0) mItem.hidden = !(this._Type == "text");
+              else if(mValue.indexOf("img")>=0) mItem.hidden = !(this._Type == "image");
+              sItems.push(!mItem.hidden);
+            }
+            else {
+              for each (var sItem in sItems) {
+                if(sItem) {
+                  mItem.hidden = false;
+                  break;
+                }
+                mItem.hidden = true;
+              }
+              sItems = [];
+            }
+          }
+      ]]>
+      </constructor>
+
+      <property name="_Type"
+          onget="return this.getAttribute('_Type');"/>
+      <property name="_disabled">
+        <getter><![CDATA[
+          return document.getAnonymousNodes(this)[0].disabled;
+        ]]></getter>
+        <setter><![CDATA[
+          document.getAnonymousNodes(this)[0].disabled = val;
+          document.getAnonymousNodes(this)[1].childNodes[1].disabled = val;
+        ]]></setter>
+      </property>
+      <property name="_engine">
+        <getter><![CDATA[
+          return document.getAnonymousNodes(this)[1].childNodes[1].value;
+        ]]></getter>
+        <setter><![CDATA[
+          var menu = document.getAnonymousNodes(this)[1].childNodes[1];
+          menu.value = val;
+          try {
+            if ((val == "c" || val == "d") && menu.getAttribute("label").indexOf("[") == -1) {
+              var ss = Components.classes["@mozilla.org/browser/search-service;1"].
+                        getService(Components.interfaces.nsIBrowserSearchService);
+              if (val == "c" && ss.currentEngine)
+                menu.setAttribute("label", menu.getAttribute("label") + "[" + ss.currentEngine.name + "]");
+              else if (val == "d" && ss.defaultEngine)
+                menu.setAttribute("label", menu.getAttribute("label") + "[" + ss.defaultEngine.name + "]");
+            }
+            else if (val != "c" && val != "d")
+              menu.setAttribute("label", val);
+          } catch(e) {}
+        ]]></setter>
+      </property>
+      <property name="_engineHidden"
+          onget="return document.getAnonymousNodes(this)[1].hidden;"
+          onset="document.getAnonymousNodes(this)[1].hidden = val;"/>
+      <property name="_selectedItem">
+        <getter><![CDATA[
+          return document.getAnonymousNodes(this)[0].selectedItem.value;
+        ]]></getter>
+        <setter><![CDATA[
+
+		  if (val.indexOf("search-") == 0 &&  val.indexOf("-find") ==-1 && val.indexOf("savetext") && val.indexOf("search-list")==-1 && val.indexOf("copyToClipboard")==-1)
+            this._engineHidden = false;
+          else
+            this._engineHidden = true;
+          document.getAnonymousNodes(this)[0].value = val;
+          if (this._Type == "image")
+            easyDragSettings.updateImgFloderStatus();
+        ]]></setter>
+      </property>
+    </implementation>
+    <handlers>
+      <handler event="command"
+               action="this._selectedItem = document.getAnonymousNodes(this)[0].selectedItem.value;"/>
+    </handlers>
+  </binding>
+  
+  <binding id="easydragtogo-Direction">
+    <content>
+      <xul:radiogroup class="easydragtogo-Menu">
+        <xul:hbox class="easydragtogo-Menu">
+          <xul:radio class="direc-four"/>
+          <xul:radio class="direc-ud"/>
+          <xul:radio class="direc-rl"/>
+          <xul:radio class="direc-any"/>
+          <xul:radio class="direc-none"/>
+        </xul:hbox>
+      </xul:radiogroup>
+    </content>
+    <implementation>
+      <property name="_mId"
+          onget="return this.getAttribute('_mId');"/>
+      <property name="_selectedIndex"
+          onget="return document.getAnonymousNodes(this)[0].selectedIndex;"
+          onset="document.getAnonymousNodes(this)[0].selectedIndex = val;this.getDirection();"/>
+      <method name="getDirection">
+        <body><![CDATA[
+          var mode = this._selectedIndex;
+          document.getElementById(this._mId + '-edg-any')._disabled= mode!=3;
+          document.getElementById(this._mId + '-edg-up')._disabled= mode==2 || mode==3 || mode==4;
+          document.getElementById(this._mId + '-edg-down')._disabled= mode==2 || mode==3 || mode==4;
+          document.getElementById(this._mId + '-edg-right')._disabled= mode==1 || mode==3 || mode==4;
+          document.getElementById(this._mId + '-edg-left')._disabled= mode==1 || mode==3 || mode==4;
+          if (this._mId == "img")
+            easyDragSettings.updateImgFloderStatus();
+        ]]></body>
+      </method>
+    </implementation>
+    <handlers>
+      <handler event="command" action="this.getDirection();"/>
+    </handlers>
+  </binding>
+
+</bindings>

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0"?>
+
+<overlay id="easydragtogoOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+   <script type="application/javascript" src="chrome://global/content/nsDragAndDrop.js"/>
+   <script type="application/x-javascript" src="chrome://easydragtogo/content/easydragtogo.js"/>
+   <script type="application/x-javascript" src="chrome://easydragtogo/content/utils.js"/>
+</overlay> 

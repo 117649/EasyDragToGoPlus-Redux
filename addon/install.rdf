@@ -1,0 +1,88 @@
+﻿<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+    <Description about="urn:mozilla:install-manifest">
+
+        <em:id>EasyDragToGoPlusSMod@gmail.com</em:id>
+        <em:name>Easy DragToGo+ SMod</em:name>
+        <em:version>1.1.7.b29</em:version>
+	<em:type>2</em:type>
+        <em:description>Allows you to open a new tab using drag and drop gestures easier.</em:description>
+        <em:creator>Idragonet</em:creator>
+	    <em:contributor>Sunwan, author of Easy DragToGo</em:contributor>
+	    <em:contributor>firefox.net.cn</em:contributor>
+        <em:contributor>Sociz.com</em:contributor>
+        <em:contributor>Fishbone</em:contributor>
+        <em:contributor>Dudu8995</em:contributor>
+        <em:contributor>leysion</em:contributor>
+        <em:translator>Stephan(German)</em:translator>
+        <em:homepageURL>http://www.firefox.net.cn/forum/viewtopic.php?t=29894</em:homepageURL>
+        <em:optionsURL>chrome://easydragtogo/content/easydragtogoConfig.xul</em:optionsURL>
+        <em:iconURL>chrome://easydragtogo/skin/easydragtogo.png</em:iconURL>
+   <!-- Firefox -->
+        <em:targetApplication>
+            <Description>
+                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                <em:minVersion>28.*</em:minVersion>
+                <em:maxVersion>48.*</em:maxVersion>
+            </Description>
+        </em:targetApplication>
+
+
+
+   <em:localized>
+     <Description>
+       <em:locale>zh-CN</em:locale>
+       <em:name>Easy DragToGo+ Mod</em:name>
+        <em:creator>Idragonet</em:creator>
+	    <em:contributor>Easy DragToGo作者:Sunwan</em:contributor>
+	    <em:contributor>firefox.net.cn</em:contributor>
+        <em:contributor>Sociz.com</em:contributor>
+        <em:contributor>Fishbone</em:contributor>
+        <em:contributor>Dudu8995</em:contributor>
+        <em:contributor>leysion</em:contributor>
+        <em:translator>Stephan(German)</em:translator>
+        <em:description> 轻松使用拖曳手势打开标签页.</em:description>
+        <em:homepageURL>http://www.firefox.net.cn/forum/viewtopic.php?t=29894</em:homepageURL>
+     </Description>
+   </em:localized>
+
+   <em:localized>
+     <Description>
+        <em:locale>zh-TW</em:locale>
+       <em:name>Easy DragToGo+ Mod</em:name>
+        <em:creator>Idragonet</em:creator>
+	    <em:contributor>Easy DragToGo作者:Sunwan</em:contributor>
+	    <em:contributor>firefox.net.cn</em:contributor>
+        <em:contributor>Sociz.com</em:contributor>
+        <em:contributor>Fishbone</em:contributor>
+        <em:contributor>Dudu8995</em:contributor>
+        <em:contributor>leysion</em:contributor>
+        <em:translator>Stephan(German)</em:translator>
+        <em:description>輕鬆使用拖動手勢打開分頁.</em:description>
+        <em:homepageURL>http://www.firefox.net.cn/forum/viewtopic.php?t=29894</em:homepageURL>
+     </Description>
+   </em:localized>
+
+
+      <em:localized>
+       <Description>
+        <em:locale>DE</em:locale>
+       <em:name>Easy DragToGo+ Mod</em:name>
+        <em:creator>Idragonet</em:creator>
+	    <em:contributor>Sunwan,Easy DragToGo Autor von :Sunwan</em:contributor>
+	    <em:contributor>Sunwan, Autor von Easy DragToGo</em:contributor>
+	    <em:contributor>firefox.net.cn</em:contributor>
+        <em:contributor>Sociz.com</em:contributor>
+        <em:contributor>Fishbone</em:contributor>
+        <em:contributor>Dudu8995</em:contributor>
+        <em:contributor>leysion</em:contributor>
+        <em:translator>Stephan(German)</em:translator>
+        <em:description>Tabs mit Mausgesten öffnen.</em:description>
+        <em:homepageURL>http://www.firefox.net.cn/forum/viewtopic.php?t=29894</em:homepageURL>
+     </Description>
+   </em:localized>
+
+ </Description>
+</RDF>

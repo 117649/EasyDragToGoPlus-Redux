@@ -1,0 +1,78 @@
+﻿<!ENTITY easydragtogo.config.title              "Easy DragToGo+ Options">
+
+<!ENTITY dialogButton.rstDefault                "Restore Defaults">
+
+<!ENTITY gesture.menu.width                     "340px">
+<!ENTITY gesture.menuSearch.width               "220px">
+<!ENTITY gesture.menuEngine.width               "130px">
+
+<!-- Gestures -->
+<!ENTITY settings.link                          "Links">
+<!ENTITY settings.text                          "Text">
+<!ENTITY settings.img                           "Images">
+
+<!ENTITY settings.text-gesture-label            "Gestures of dragging selected text">
+<!ENTITY settings.link-gesture-label            "Gestures of dragging links">
+<!ENTITY settings.img-gesture-label             "Gestures of dragging images">
+
+<!ENTITY settings.direction                     "Setting of gesture direction:">
+<!ENTITY gesture.label                          "Setting of each gesture:">
+<!ENTITY settings.search-engine                 "Engine:">
+<!ENTITY settings.text-direction-any            "Any:">
+<!ENTITY settings.text-direction-up             "Up:">
+<!ENTITY settings.text-direction-down           "Down:">
+<!ENTITY settings.text-direction-right          "Right:">
+<!ENTITY settings.text-direction-left           "Left:">
+
+<!ENTITY settings.link-fg                       "Open links in new foreground tab">
+<!ENTITY settings.link-bg                       "Open links in new background tab">
+<!ENTITY settings.link-cur                      "Open links in current tab">
+<!ENTITY settings.save-link                     "Save links as ...">
+
+<!ENTITY linkFromContentOuter.label             "Links dragged from outside of content area">
+
+<!ENTITY settings.search-fg                     "Search in new foreground tab">
+<!ENTITY settings.search-bg                     "Search in new background tab">
+<!ENTITY settings.search-cur                    "Search in current tab">
+
+<!ENTITY settings.search-find                   "Find text in current page and highlight">
+<!ENTITY settings.search-site                    "Search in new foreground tab(With site search) ">
+<!ENTITY settings.search-list                    "Select the search engine new foreground tab">
+<!ENTITY settings.search-savetext                    "Save as a text file">
+<!ENTITY settings.search-copyToClipboard                    "Copy to Clipboard While Selecting Text">
+
+
+<!ENTITY settings.engine-current                "Current">
+<!ENTITY settings.engine-default                "Default">
+
+<!ENTITY textFromContentOuter.label             "Text dragged from outside of content area">
+
+<!ENTITY settings.img-fg                        "Open images in new foreground tab">
+<!ENTITY settings.img-bg                        "Open images in new background tab">
+<!ENTITY settings.img-cur                       "Open images in current tab">
+<!ENTITY settings.save-img                      "Save images as ...">
+<!ENTITY settings.save-df-img                   "Save images in the specified folder directly1">
+<!ENTITY settings.save-df-img2                   "Save images in the specified folder directly2">
+<!ENTITY settings.save-df-img3                   "Save images in the specified folder directly3">
+<!ENTITY settings.save-df-img4                   "Save images in the specified folder directly4">
+<!ENTITY settings.save-df-dir                   "Directly1:">
+<!ENTITY settings.save-df-dir2                   "Directly2:">
+<!ENTITY settings.save-df-dir3                   "Directly3:">
+<!ENTITY settings.save-df-dir4                   "Directly4:">
+<!ENTITY settings.img-searchfg                   "Google.com search for similar images in new foreground tab">
+<!ENTITY settings.img-searchbg                   "Google.com search for similar images in new background tab">
+
+<!ENTITY settings.do-nothing                    "Does nothing">
+
+<!ENTITY imgSaveFloder.label                    "Save images to">
+<!ENTITY floderBrowse                           "Browse">
+<!ENTITY saveDomainName.label                   "Create a subdirectory with the domain name of current page automatically">
+<!ENTITY saveByDatetime.label                   "Save the picture file name before the increase in the current date(YYYY-MM-dd)">
+
+<!ENTITY EasydragtogoToSet.label            "Drag Set">
+<!ENTITY dragtogoEmailSearch.label                   "E-mail address using a search">
+<!ENTITY pref.Timeout "Cancel drag action delay(milliseconds):">
+<!ENTITY FirefoxTabOpen.label  "New Tab according to browser.tabs.insertRelatedAfterCurrent set(or force the far right New Tab)">
+
+
+<!ENTITY settings.link-tooltips.label            "Tip:When holding the CTRL button on the point, Links as text.">
