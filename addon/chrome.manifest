@@ -1,6 +1,6 @@
-overlay chrome://browser/content/browser.xul    chrome://easydragtogo/content/easydragtogoOverlay.xul
-
 content    easydragtogo              chrome/content/
+content	   easydragtogo-defaults     defaults/preferences/
+
 skin       easydragtogo  classic/1.0  chrome/skin/classic/
 
 locale     easydragtogo  en-US        chrome/locale/en-US/

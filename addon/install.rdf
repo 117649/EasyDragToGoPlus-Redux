@@ -5,8 +5,9 @@
     <Description about="urn:mozilla:install-manifest">
 
         <em:id>EasyDragToGoPlusSMod@gmail.com</em:id>
-        <em:name>Easy DragToGo+ SMod</em:name>
+        <em:name>Easy DragToGo+ Redux</em:name>
         <em:version>1.1.7.b29</em:version>
+        <em:bootstrap>true</em:bootstrap>
 	<em:type>2</em:type>
         <em:description>Allows you to open a new tab using drag and drop gestures easier.</em:description>
         <em:creator>Idragonet</em:creator>
@@ -18,14 +19,15 @@
         <em:contributor>leysion</em:contributor>
         <em:translator>Stephan(German)</em:translator>
         <em:homepageURL>http://www.firefox.net.cn/forum/viewtopic.php?t=29894</em:homepageURL>
-        <em:optionsURL>chrome://easydragtogo/content/easydragtogoConfig.xul</em:optionsURL>
+        <em:optionsURL>chrome://easydragtogo/content/easydragtogoConfig.xhtml</em:optionsURL>
+        <em:optionsType>1</em:optionsType>
         <em:iconURL>chrome://easydragtogo/skin/easydragtogo.png</em:iconURL>
    <!-- Firefox -->
         <em:targetApplication>
             <Description>
                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-                <em:minVersion>28.*</em:minVersion>
-                <em:maxVersion>48.*</em:maxVersion>
+                <em:minVersion>88.*</em:minVersion>
+                <em:maxVersion>*</em:maxVersion>
             </Description>
         </em:targetApplication>
 

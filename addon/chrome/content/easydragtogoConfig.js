@@ -13,7 +13,7 @@ var easyDragSettings = {
 //进入 “配置”界面，设置扩展   
 //R:search-问问-fg
     onLoad: function() {
-      for each (var tag in this.targets) {
+      for(var tag of this.targets) {
         var actStr = easyDragUtils.getPref(tag + '.actionSets', '|'); //这个是拖拽对象类型（如：文字、链接）
         var dirDom = document.getElementById('direction-' + tag);   //这个是拖拽方向（如：向上、向下）
         if (!dirDom) continue;
@@ -47,7 +47,7 @@ var easyDragSettings = {
         }
       }
 
-      var aPref = easyDragUtils.getPref("fromContentOuter.text", "search-c-fg");
+      var aPref = easyDragUtils.getPref("fromContentOuter.text", "search-d-fg");
       if (aPref.indexOf("search-") == 0)
         this.setSearchEngine(document.getElementById("textFromContentOuter"), aPref);
       else
@@ -68,7 +68,7 @@ var easyDragSettings = {
 
 //保存设置方法
     onAccept: function() {
-      for each (var tag in this.targets) {
+      for(var tag of this.targets) {
         var actStr = "";
         var dirDom = document.getElementById('direction-' + tag);
         if (!dirDom) continue;
@@ -108,7 +108,7 @@ var easyDragSettings = {
 
     rstDefault: function() {
       var prefNames = easyDragUtils.pref.getChildList( "", {} );
-      for each (var aPref in prefNames) {
+      for(var aPref of prefNames) {
         if (aPref.indexOf("custom.") != 0)
           try { easyDragUtils.pref.clearUserPref(aPref); } catch(e) {}
       }
@@ -126,39 +126,39 @@ var easyDragSettings = {
 
       try {
         var dir = Components.classes["@mozilla.org/file/local;1"]
-                    .createInstance(Components.interfaces.nsILocalFile);
+                    .createInstance(Components.interfaces.nsIFile);
         dir.initWithPath( dirDom.value );
         fp.displayDirectory = dir;
       } catch (e) {}
 
-      if ( fp.show() == picker.returnOK )
-        dirDom.value = fp.file.path;
+      fp.open(a => {
+        if ( a == picker.returnOK )
+          dirDom.value = fp.file.path;
+      });
     },
 
     setSearchEngine: function(menu, act) {
       if ( /^search-(.+?)-?(fg|bg|cur|find|site|savetext|copyToClipboard|list)$/.test(act) ) {
         menu._selectedItem = "search-" + RegExp.$2;
         var engineName = RegExp.$1;
-        engineName ? (menu._engine = engineName) : (menu._engine = "c");
+        engineName ? (menu._engine = engineName) : (menu._engine = "d");
       }
       else {
         menu._selectedItem = "search-fg";
-        menu._engine = "c";
+        menu._engine = "d";
       }
     },
 
-    createEnginesList: function(popup) {
-      if (popup.childNodes.length > 3) return;
+    createEnginesList: async function(popup) {
+      if (popup.childNodes.length > 2) return;
       var ss = Components.classes["@mozilla.org/browser/search-service;1"]
-                .getService(Components.interfaces.nsIBrowserSearchService);
+                .getService(Components.interfaces.nsISearchService);
       if (!ss) return;
-      var engines = ss.getEngines({});
-      if (ss.currentEngine)
-        popup.childNodes[0].label += "[" + ss.currentEngine.name + "]";
+      var engines = await ss.getEngines();
       if (ss.defaultEngine)
-        popup.childNodes[1].label += "[" + ss.defaultEngine.name + "]";
+        popup.childNodes[0].label += "[" + ss.defaultEngine.name + "]";
       for (var i = 0; i < engines.length; i++) {
-        var m = popup.appendChild(document.createElement("menuitem"));
+        var m = popup.appendChild(document.createXULElement("menuitem"));
         m.label = m.value = engines[i].name;
       }
     },
@@ -166,7 +166,7 @@ var easyDragSettings = {
     updateImgFloderStatus: function() {
       var items = ["img-edg-any", "img-edg-up", "img-edg-down", "img-edg-right", "img-edg-left"];
       var enabled = true;
-      for each (var it in items) {
+      for(var it of items) {
         try {
           enabled = enabled || !document.getElementById(it)._disabled &&
                       document.getElementById(it)._selectedItem == "save-df-img";

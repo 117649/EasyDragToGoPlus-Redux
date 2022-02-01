@@ -52,12 +52,10 @@ var easyDragToGo = {
     _statustext: null,
     onLoad: function () {
         if (!easyDragToGo.loaded) {
-            var contentArea = getBrowser().mPanelContainer;
+            var contentArea = gBrowser.tabpanels;
             if (!contentArea) console.info('EasyDragToGo+ failed to initialize!');
 
-        easyDragToGo._statusTextField = document.getElementById("statusbar-display");
-        if (!easyDragToGo._statusTextField)
-            easyDragToGo._statusTextField = gBrowser.getStatusPanel();
+        easyDragToGo._statusTextField =  window.StatusPanel;
 
             if (contentArea) {
 
@@ -74,7 +72,7 @@ var easyDragToGo = {
                         }
                     }
                     easyDragToGo.dragStart(e);
-                }, true); // 开启e10s后只有在Capture phase 才能触发该块,但完全没用，target不准，永远是browser，e10s下该块基本无用
+                }, true, true); // 开启e10s后只有在Capture phase 才能触发该块,但完全没用，target不准，永远是browser，e10s下该块基本无用
 
                 contentArea.addEventListener('dragover', function (e) {
 
@@ -92,18 +90,7 @@ var easyDragToGo = {
 											easyDragToGo.moving = false;
                   }
 
-                }, false);
-
-                contentArea.addEventListener('dragdrop', function (e) {
-
-                    if (easyDragToGo._nodeAcceptsDrops(e.target)) {
-                        easyDragToGo.clean();
-                        return;
-                    }
-
-                    //nsDragAndDrop.drop(e, easyDragToGoDNDObserver);	//2016-10-02 SHP MOD
-                    //easyDragToGoDNDObserver.onDrop(e)	//2016-10-02 SHP MOD
-                }, false);
+                }, false, true);
 
                 contentArea.addEventListener('drop', function (e) {
                     if (easyDragToGo._nodeAcceptsDrops(e.target)) {
@@ -114,7 +101,7 @@ var easyDragToGo = {
 
                     easyDragToGoDNDObserver.onDrop(e)	//2016-10-02 SHP MOD
 
-                }, false);
+                }, false, true);
 
                 contentArea.addEventListener('keyup', function (e) {
 
@@ -164,7 +151,7 @@ var easyDragToGo = {
 
     //* The Original Code is FireGestures.
     setStatusText: function (aText) {
-       easyDragToGo._statusTextField.label = aText;
+       easyDragToGo._statusTextField._label = aText;
     },
     //* The Original Code is FireGestures.
     clearStatusText: function (aMillisec) {
@@ -172,10 +159,10 @@ var easyDragToGo = {
             window.clearTimeout(easyDragToGo._clearStatusTimer);
             easyDragToGo._clearStatusTimer = null;
         }
-        var text = easyDragToGo._statusTextField.label;
+        var text = easyDragToGo._statusTextField._label;
         var callback = function(self) {
             self._clearStatusTimer = null;
-            if (self._statusTextField.label == text)
+            if (self._statusTextField._label == text)
                 self.setStatusText("");
         };
         easyDragToGo._clearStatusTimer = window.setTimeout(callback, aMillisec, this);
@@ -238,7 +225,7 @@ var easyDragToGo = {
         }
 				
         if (!act) return;
-        var browser = getTopWin().getBrowser();
+        var browser = getTopWin().gBrowser;
         var uri = "";
         var bg = true;
         var postData = {};
@@ -348,7 +335,7 @@ var easyDragToGo = {
                         popup.removeEventListener("command", serach, false);
                         popup.removeEventListener("popuphidden", closeSerach, false);
                         setTimeout(function (selectedEngine) {
-                            gBrowser.loadOneTab(null, aReferrerURI, null, null, false, false);
+                            gBrowser.loadOneTab(null, {referrerInfo: aReferrerURI, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), inBackground: false, allowThirdPartyFixup: false});
                             BrowserSearch.loadSearch(aURI, false);
                             popup.querySelector("#" + String(selectedEngine.id).replace(/\s/g, '\\$&')).click();
                             search_container.setAttribute("class", searchclass);
@@ -410,7 +397,7 @@ var easyDragToGo = {
                 } catch (e) {}
 
                 //alert('uri:'+uri)
-                gBrowser.loadOneTab(uri, aReferrerURI, null, postData.value, bg, false);
+                gBrowser.loadOneTab(uri, {referrerInfo: aReferrerURI, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: bg, allowThirdPartyFixup: false});
             }
             break;
 
@@ -443,7 +430,7 @@ var easyDragToGo = {
                 TreeStyleTabService.readyToOpenChildTab(gBrowser.selectedTab);
             } catch (e) {}
             // open imgs in new tab
-            gBrowser.loadOneTab(src, null, null, null, bg, false);
+            gBrowser.loadOneTab(src, {triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), inBackground: bg, allowThirdPartyFixup: false});
             break;
 
 
@@ -452,12 +439,12 @@ var easyDragToGo = {
             //搜索相似图片(Google)
             var searchbyimageUrl=easyDragUtils.getPref("searchbyimageUrl", "");
             var searchuri = searchbyimageUrl + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.loadOneTab(searchuri, aReferrerURI, null, postData.value, false, false);
+            gBrowser.loadOneTab(searchuri, {referrerInfo: aReferrerURI, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: false, allowThirdPartyFixup: false});
             break;
 
         case "img-searchbg":
             var searchuri = "http://www.google.com/searchbyimage?image_url=" + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.loadOneTab(searchuri, aReferrerURI, null, postData.value, true, false);
+            gBrowser.loadOneTab(searchuri, {referrerInfo: aReferrerURI, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: true, allowThirdPartyFixup: false});
             break;
 
         case "img-cur":
@@ -541,9 +528,9 @@ var easyDragToGo = {
     getSearchSubmission: function (searchStr, action) {
         try {
             //site search
-            if (action.indexOf("-site") != -1) searchStr = "site:" + getTopWin().getBrowser().currentURI.host + " " + searchStr;
+            if (action.indexOf("-site") != -1) searchStr = "site:" + getTopWin().gBrowser.currentURI.host + " " + searchStr;
 
-            var ss = Components.classes["@mozilla.org/browser/search-service;1"].getService(Components.interfaces.nsIBrowserSearchService);
+            var ss = Components.classes["@mozilla.org/browser/search-service;1"].getService(Components.interfaces.nsISearchService);
             var engine, engineName;
             if (/^search-(.+?)-?(fg|bg|cur|site)$/.test(action)) engineName = RegExp.$1;
             else engineName = "c";
@@ -592,7 +579,7 @@ var easyDragToGo = {
                                        .getService(Components.interfaces.imgITools)
                                        .getImgCacheForDocument(aDoc);
 
-            var props = imageCache.findEntryProperties(makeURI(aSrc, getCharsetforSave(null)));
+            var props = imageCache.findEntryProperties(makeURI(aSrc, getCharsetforSave(null)), aDoc);
 
             if (props.has("type")) {
                 contentType = props.get("type", Ci.nsISupportsCString).toString();
@@ -626,12 +613,16 @@ var easyDragToGo = {
         if (!fileName) return "No image!";
 
         var fileSaving = Components.classes["@mozilla.org/file/local;1"].
-        createInstance(Components.interfaces.nsILocalFile);
-        fileSaving.initWithPath(path);
-        if (!fileSaving.exists() || !fileSaving.isDirectory()) return "The download folder does not exist!";
+        createInstance(Components.interfaces.nsIFile);
+        try{
+            fileSaving.initWithPath(path);
+            if (!fileSaving.exists() || !fileSaving.isDirectory()) return "The download folder does not exist!";
+        }catch(e){
+            return "Invalid download path";
+        }
         // create a subdirectory with the domain name of current page
         if (easyDragUtils.getPref("saveDomainName", true)) {
-            var domainName = getTopWin().getBrowser().currentURI.host;
+            var domainName = getTopWin().gBrowser.currentURI.host;
             if (domainName) {
                 fileSaving.append(domainName);
                 if (!fileSaving.exists() || !fileSaving.isDirectory()) {
@@ -664,11 +655,11 @@ var easyDragToGo = {
                        createInstance(Components.interfaces.nsISupportsString);
         cacheKey.data = aSrc;
 
-        var urifix = Components.classes['@mozilla.org/docshell/urifixup;1'].
+        var urifix = Components.classes['@mozilla.org/docshell/uri-fixup;1'].
                      getService(Components.interfaces.nsIURIFixup);
-        var uri = urifix.createFixupURI(aSrc, 0);
+        var uri = urifix.getFixupURIInfo(aSrc, 0).preferredURI;
         var hosturi = null;
-        if (uri.host.length > 0) hosturi = urifix.createFixupURI(uri.host, 0);
+        if (uri.host.length > 0) hosturi = urifix.getFixupURIInfo(uri.host, 0).preferredURI;
 
         var options = {
             source: uri,
@@ -678,8 +669,7 @@ var easyDragToGo = {
         var downloadPromise = Downloads.createDownload(options)
         downloadPromise.then(function success(d) { d.start(); });
 
-        var tPrefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch);
-        var lang = tPrefs.getComplexValue('general.useragent.locale', Ci.nsISupportsString).data;
+        var lang = document.documentElement.lang;
 
         var SaveLabel = "The image(" + newFileName + ") has been saved to " + path;
         if (lang.indexOf("CN") != -1) SaveLabel = "图片(" + newFileName + ")已保存到:" + path;
@@ -761,7 +751,7 @@ var easyDragToGo = {
     SecurityCheckURL: function (aURI) {
         if (/^data:/.test(aURI)) return "";
         if (/^javascript:/.test(aURI)) return aURI;
-        var sourceURL = getBrowser().currentURI.spec;
+        var sourceURL = gBrowser.currentURI.spec;
         const nsIScriptSecurityManager = Components.interfaces.nsIScriptSecurityManager;
         var secMan = Components.classes["@mozilla.org/scriptsecuritymanager;1"].getService(nsIScriptSecurityManager);
         const nsIScriptSecMan = Components.interfaces.nsIScriptSecurityManager;

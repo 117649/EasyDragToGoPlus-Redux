@@ -14,7 +14,7 @@ var easyDragUtils = {
       if (!this._dlFolder) {
         var fileLocator = Components.classes["@mozilla.org/file/directory_service;1"].
                             getService(Components.interfaces.nsIProperties);
-        var dir = fileLocator.get("Home", Components.interfaces.nsILocalFile);
+        var dir = fileLocator.get("Home", Components.interfaces.nsIFile);
         var platform = navigator.platform;
         if (platform.indexOf("Win") == 0)
           this._dlFolder = dir.path + this.WinDlFolder;
@@ -47,7 +47,7 @@ var easyDragUtils = {
         else if (typeof(value) == "number")
           scelta = this.pref.getIntPref(prefname);
         else if (typeof(value) == "string")
-          scelta = this.pref.getComplexValue(prefname, Components.interfaces.nsISupportsString).data;
+          scelta = this.pref.getStringPref(prefname);
         return scelta;
       } catch (e) {
         this.setPref(prefname, value);
@@ -61,10 +61,7 @@ var easyDragUtils = {
       else if (typeof(value) == "number")
         this.pref.setIntPref(prefname, value);
       else if (typeof(value) == "string") {
-        var str = Components.classes["@mozilla.org/supports-string;1"].
-                    createInstance(Components.interfaces.nsISupportsString);
-        str.data = value;
-        this.pref.setComplexValue(prefname, Components.interfaces.nsISupportsString, str);
+        this.pref.setStringPref(prefname, value);
       }
     }
 };
