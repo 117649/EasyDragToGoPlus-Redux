@@ -48,7 +48,7 @@ var easyDragToGo = {
     _statusTextField: null,
     _clearStatusTimer: null,
     _statustext: null,
-    aReferrerURI: null,
+    aRelatedToCurrent: null,
     _statustext: null,
     onLoad: function () {
         if (!easyDragToGo.loaded) {
@@ -174,9 +174,9 @@ var easyDragToGo = {
     openURL: function (aEvent,aURI, src, target, X, Y) {
         if (!aURI) return;
         if (easyDragUtils.getPref("FirefoxTabOpen", true)) {
-            aReferrerURI = gBrowser.currentURI;
+            aRelatedToCurrent = true;
         } else {
-            aReferrerURI = null;
+            aRelatedToCurrent = null;
         }
 
         var act = "";
@@ -335,7 +335,7 @@ var easyDragToGo = {
                         popup.removeEventListener("command", serach, false);
                         popup.removeEventListener("popuphidden", closeSerach, false);
                         setTimeout(function (selectedEngine) {
-                            gBrowser.loadOneTab(null, {referrerInfo: aReferrerURI, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), inBackground: false, allowThirdPartyFixup: false});
+                            gBrowser.loadOneTab(null, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), inBackground: false, allowThirdPartyFixup: false});
                             BrowserSearch.loadSearch(aURI, false);
                             popup.querySelector("#" + String(selectedEngine.id).replace(/\s/g, '\\$&')).click();
                             search_container.setAttribute("class", searchclass);
@@ -397,7 +397,7 @@ var easyDragToGo = {
                 } catch (e) {}
 
                 //alert('uri:'+uri)
-                gBrowser.loadOneTab(uri, {referrerInfo: aReferrerURI, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: bg, allowThirdPartyFixup: false});
+                gBrowser.loadOneTab(uri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: bg, allowThirdPartyFixup: false});
             }
             break;
 
@@ -439,12 +439,12 @@ var easyDragToGo = {
             //搜索相似图片(Google)
             var searchbyimageUrl=easyDragUtils.getPref("searchbyimageUrl", "");
             var searchuri = searchbyimageUrl + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.loadOneTab(searchuri, {referrerInfo: aReferrerURI, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: false, allowThirdPartyFixup: false});
+            gBrowser.loadOneTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: false, allowThirdPartyFixup: false});
             break;
 
         case "img-searchbg":
             var searchuri = "http://www.google.com/searchbyimage?image_url=" + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.loadOneTab(searchuri, {referrerInfo: aReferrerURI, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: true, allowThirdPartyFixup: false});
+            gBrowser.loadOneTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: true, allowThirdPartyFixup: false});
             break;
 
         case "img-cur":
