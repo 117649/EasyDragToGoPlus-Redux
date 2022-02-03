@@ -249,11 +249,16 @@ var easyDragToGo = {
         switch (act) {
             //find text
         case "search-find":
-            gFindBar.onFindCommand();
-            var Highlight = gFindBar.getElement("highlight");
-            Highlight.setAttribute('checked', true);
-            Highlight.click();
-            Highlight.click();
+            if(!gFindBarInitialized) {
+                gBrowser.finder.highlight(true, aURI)
+                gLazyFindCommand('onFindCommand').then(()=>{
+                gFindBar.toggleHighlight(true);
+                gFindBar.onFindAgainCommand(true);
+                gFindBar.onFindAgainCommand(false);});}
+            else{
+                gLazyFindCommand('onFindCommand').then(()=>{
+                gFindBar.toggleHighlight(true);});
+            }
             return;
 
             //save text
@@ -265,97 +270,11 @@ var easyDragToGo = {
             //* The Original Code is http://www.cnblogs.com/ziyunfei/archive/2011/12/20/2293928.html
             //search-list
         case "search-list":
-            var searchhide = function (isHide) {
-                    if (isHide) {
-                        curSet = navBar.currentSet.split(",");
-                        var i = curSet.indexOf(searchId);
-                        if (i != -1) {
-                            curSet.splice(i, 1);
-                            curSet = curSet.join(",");
-                            navBar.setAttribute("currentset", curSet);
-                            navBar.currentSet = curSet;
-                            document.persist(navBar.id, "currentset");
-                            try {
-                                BrowserToolboxCustomizeDone(true);
-                            } catch (e) {}
-                            try {
-                                BrowserToolboxCustomizeDone(true);
-                            } catch (e) {}
-                            try {
-                                BrowserToolboxCustomizeDone(true);
-                            } catch (e) {}
-                            try {
-                                BrowserToolboxCustomizeDone(true);
-                            } catch (e) {}
-                            try {
-                                BrowserToolboxCustomizeDone(true);
-                            } catch (e) {}
-                            try {
-                                BrowserToolboxCustomizeDone(true);
-                            } catch (e) {}
-                            try {
-                                BrowserToolboxCustomizeDone(true);
-                            } catch (e) {}
-                        }
-                    } else {
-                        var pos = curSet.length;
-                        curSet.splice(pos, 0, searchId);
-                        curSet = curSet.join(",");
-                        navBar.setAttribute("currentset", curSet);
-                        navBar.currentSet = curSet;
-                        document.persist(navBar.id, "currentset");
-                        try {
-                            BrowserToolboxCustomizeDone(true);
-                        } catch (e) {}
-                    }
-                }
-
-            var searchId = "search-container";
-            var searchIsHidden = false;
-            //判断搜索栏是否隐藏
-            var navBar = document.getElementById("nav-bar");
-            var curSet = navBar.currentSet.split(",");
-
-            if (curSet.indexOf(searchId) == -1) {
-                searchIsHidden = true;
-            }
-            //显示搜索栏
-            if (searchIsHidden) {
-                searchhide(false);
-            }
-
-
             try {
-                var search_container = document.getElementById("search-container");
-                var searchclass = search_container.getAttribute("class");
-                search_container.setAttribute("class", "");
-
-                var popup = document.getAnonymousElementByAttribute(document.querySelector("#searchbar").searchButton, "anonid", "searchbar-popup");
-                var serach = function () {
-                        popup.removeEventListener("command", serach, false);
-                        popup.removeEventListener("popuphidden", closeSerach, false);
-                        setTimeout(function (selectedEngine) {
-                            gBrowser.loadOneTab(null, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), inBackground: false, allowThirdPartyFixup: false});
-                            BrowserSearch.loadSearch(aURI, false);
-                            popup.querySelector("#" + String(selectedEngine.id).replace(/\s/g, '\\$&')).click();
-                            search_container.setAttribute("class", searchclass);
-                            if (searchIsHidden) searchhide(true);
-                        }, 50, popup.querySelector("*[selected=true]"));
-                    };
-
-                var closeSerach = function () {
-                        popup.removeEventListener("command", serach, false);
-                        popup.removeEventListener("popuphidden", closeSerach, false);
-                        search_container.setAttribute("class", searchclass);
-                        if (searchIsHidden) searchhide(true);
-                    };
-
-
-                popup.addEventListener("command", serach, false);
-                popup.addEventListener("popuphidden", closeSerach, false);
-                popup.openPopup(null, null, easyDragToGo.onStartEvent.screenX - 100, easyDragToGo.onStartEvent.screenY - 100);
+                gURLBar.searchModeShortcut();
+                gURLBar.value = aURI;
             } catch (e) {
-                alert("Easy DragToGo+ error :  May be Remove the search bar. \n\n" + e.name + " :  " + e.message);
+                alert("Easy DragToGo+ error :  Search In Urlbar. \n\n" + e.name + " :  " + e.message);
                         }
             return;
             //copyToClipboard
@@ -410,7 +329,7 @@ var easyDragToGo = {
             uri = aURI;
             // alert(e.name  +   " :  "   +  e.message+aURI+postData);
         }
-            loadURI(uri, null, postData.value, true);
+            loadURI(uri, null, postData.value, true, null, null, null, null, gBrowser.selectedBrowser.contentPrincipal);
             break;
 
         case "save-link":
@@ -879,7 +798,7 @@ var easyDragToGoDNDObserver = {
 						var doc = parser.parseFromString(dragHtml, "text/html");
 						
 						//console.error(doc);
-						var hasImg = doc.querySelector("img");
+						var hasImg = doc.getRootNode().body.firstElementChild.tagName == "IMG";
 
             if (hasImg) {
 								src = promiseUrl;
