@@ -32,7 +32,7 @@
 // the terms of any one of the MPL, the GPL or the LGPL.
 // ==========================================================================
 
-var easyDragToGo = {
+this.easyDragToGo = {
 
     loaded: false,
     moving: false,
@@ -50,6 +50,7 @@ var easyDragToGo = {
     _statustext: null,
     aRelatedToCurrent: null,
     _statustext: null,
+    _listeners: {},
     onLoad: function () {
         if (!easyDragToGo.loaded) {
             var contentArea = gBrowser.tabpanels;
@@ -59,7 +60,7 @@ var easyDragToGo = {
 
             if (contentArea) {
 
-                contentArea.addEventListener('dragstart', function (e) {
+                contentArea.addEventListener('dragstart', easyDragToGo._listeners.dragstart = (e) => {
 										easyDragToGo.printDataTransferTypes(e);
                     if (e.target.nodeName == "A") {
                         var selectLinkText = document.commandDispatcher.focusedWindow.getSelection().toString();
@@ -74,7 +75,7 @@ var easyDragToGo = {
                     easyDragToGo.dragStart(e);
                 }, true, true); // 开启e10s后只有在Capture phase 才能触发该块,但完全没用，target不准，永远是browser，e10s下该块基本无用
 
-                contentArea.addEventListener('dragover', function (e) {
+                contentArea.addEventListener('dragover', easyDragToGo._listeners.dragover = (e) => {
 
 									if (easyDragToGo._nodeAcceptsDrops(e.target)) {	//开启e10s后target永远是browser无法正确判断
 											console.info("dragover accpet drop clean.");
@@ -92,7 +93,7 @@ var easyDragToGo = {
 
                 }, false, true);
 
-                contentArea.addEventListener('drop', function (e) {
+                contentArea.addEventListener('drop', easyDragToGo._listeners.drop = (e) => {
                     if (easyDragToGo._nodeAcceptsDrops(e.target)) {
                     		//console.info("drop accpet drop clean.");
                         easyDragToGo.clean();
@@ -103,7 +104,7 @@ var easyDragToGo = {
 
                 }, false, true);
 
-                contentArea.addEventListener('keyup', function (e) {
+                contentArea.addEventListener('keyup', easyDragToGo._listeners.keyup = (e) => {
 
                 	if (e.keyCode == 27 ){
                 		console.info("escaped!");
@@ -111,6 +112,13 @@ var easyDragToGo = {
                 	}
                 }, false);
 
+                easyDragToGo.onShut = () => {
+                    contentArea.removeEventListener('dragstart', easyDragToGo._listeners.dragstart, true);
+                    contentArea.removeEventListener('dragover',  easyDragToGo._listeners.dragover, false);
+                    contentArea.removeEventListener('drop', easyDragToGo._listeners.drop, false);
+                    contentArea.removeEventListener('keyup', easyDragToGo._listeners.keyup, false);
+                    easyDragToGo.loaded = false;
+                }
             }
             easyDragToGo.loaded = true;
         }
@@ -717,7 +725,7 @@ var easyDragToGo = {
 };
 
 
-var easyDragToGoDNDObserver = {
+this.easyDragToGoDNDObserver = {
 
     onDragOver: function (aEvent) {
         // for drag tabs or bookmarks
@@ -848,4 +856,4 @@ var easyDragToGoDNDObserver = {
  		}
 };
 
-window.addEventListener('load', easyDragToGo.onLoad, false);
+PlacesUIUtils.canLoadToolbarContentPromise.then(easyDragToGo.onLoad());

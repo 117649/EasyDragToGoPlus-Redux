@@ -60,6 +60,17 @@ function install(data, reason) {
 
 function uninstall() { }
 
+const documentObserver = {
+      observe(document) {
+        if (document.createXULElement) {
+          if (document.defaultView.location.origin + document.defaultView.location.pathname == "chrome://browser/content/browser.xhtml") {
+            Services.scriptloader.loadSubScript("chrome://easydragtogo/content/easydragtogo.js", document.defaultView);
+            Services.scriptloader.loadSubScript("chrome://easydragtogo/content/utils.js", document.defaultView);
+          }
+        }
+      }
+    };
+
 function startup(data, reason) {
   Components.utils.import("chrome://easydragtogo/content/defaultPreferencesLoader.jsm");
   try {
@@ -93,16 +104,6 @@ function startup(data, reason) {
   }
 
   (async function () {
-    let documentObserver = {
-      observe(document) {
-        if (document.createXULElement) {
-          if (document.defaultView.location.origin + document.defaultView.location.pathname == "chrome://browser/content/browser.xhtml") {
-            Services.scriptloader.loadSubScript("chrome://easydragtogo/content/easydragtogo.js", document.defaultView);
-            Services.scriptloader.loadSubScript("chrome://easydragtogo/content/utils.js", document.defaultView);
-          }
-        }
-      }
-    };
     Services.obs.addObserver(documentObserver, "chrome-document-loaded");
   })();
 
@@ -116,10 +117,13 @@ function startup(data, reason) {
 }
 
 function shutdown(data, reason) {
-  const window = Services.wm.getMostRecentWindow('navigator:browser');
-  if (reason === ADDON_DISABLE) {
-    showRestartNotification("disabled", window);
-  } else if (reason === ADDON_UNINSTALL) {
-    showRestartNotification("uninstalled", window);
-  }
+  Services.obs.removeObserver(documentObserver, "chrome-document-loaded")
+  const enumerator = Services.wm.getEnumerator(null);
+    while (enumerator.hasMoreElements()) {
+      const win = enumerator.getNext();
+      win?.easyDragToGo.onShut();
+      delete win.easyDragToGo;
+      delete win.easyDragUtils;
+      delete win.easyDragToGoDNDObserver;
+    }
 }

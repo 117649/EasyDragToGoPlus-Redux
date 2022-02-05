@@ -1,7 +1,7 @@
 ﻿// Code by Sunwan
 //
 
-var easyDragUtils = {
+this.easyDragUtils = {
 
     pref:           Components.classes['@mozilla.org/preferences-service;1'].
                       getService(Components.interfaces.nsIPrefService).getBranch("extensions.easydragtogo."),
