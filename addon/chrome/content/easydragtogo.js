@@ -806,7 +806,7 @@ this.easyDragToGoDNDObserver = {
 						var doc = parser.parseFromString(dragHtml, "text/html");
 						
 						//console.error(doc);
-						var hasImg = doc.getRootNode().body.firstElementChild.tagName == "IMG";
+						var hasImg = doc.getRootNode().body?.firstElementChild?.tagName == "IMG";
 
             if (hasImg) {
 								src = promiseUrl;
