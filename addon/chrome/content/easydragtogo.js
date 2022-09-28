@@ -316,7 +316,7 @@ this.easyDragToGo = {
 
             if (cur)
             // open in current tab
-            loadURI(uri, null, postData.value, true);
+            loadURI(uri, null, postData.value, true, gBrowser.contentPrincipal.originAttributes.userContextId);
             else {
                 // for Tree Style Tab extension
                 if ("TreeStyleTabService" in window && (target == "link" && !this.aDragSession.sourceNode.localName || target == "img")) try {	//2016-10-02 SHP COMMENT:这里会出现问题，aDragSession 已经木有，不过是针对树形tab扩展的，木有改
@@ -324,7 +324,7 @@ this.easyDragToGo = {
                 } catch (e) {}
 
                 //alert('uri:'+uri)
-                gBrowser.loadOneTab(uri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: bg, allowThirdPartyFixup: false});
+                gBrowser.loadOneTab(uri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
             }
             break;
 
@@ -337,7 +337,7 @@ this.easyDragToGo = {
             uri = aURI;
             // alert(e.name  +   " :  "   +  e.message+aURI+postData);
         }
-            loadURI(uri, null, postData.value, true, null, null, null, null, gBrowser.selectedBrowser.contentPrincipal);
+            loadURI(uri, null, postData.value, true, gBrowser.contentPrincipal.originAttributes.userContextId, null, null, null, gBrowser.selectedBrowser.contentPrincipal);
             break;
 
         case "save-link":
@@ -357,7 +357,7 @@ this.easyDragToGo = {
                 TreeStyleTabService.readyToOpenChildTab(gBrowser.selectedTab);
             } catch (e) {}
             // open imgs in new tab
-            gBrowser.loadOneTab(src, {triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), inBackground: bg, allowThirdPartyFixup: false});
+            gBrowser.loadOneTab(src, {triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
             break;
 
 
@@ -366,17 +366,17 @@ this.easyDragToGo = {
             //搜索相似图片(Google)
             var searchbyimageUrl=easyDragUtils.getPref("searchbyimageUrl", "");
             var searchuri = searchbyimageUrl + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.loadOneTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: false, allowThirdPartyFixup: false});
+            gBrowser.loadOneTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: false, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
             break;
 
         case "img-searchbg":
             var searchuri = "http://www.google.com/searchbyimage?image_url=" + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.loadOneTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(), postData:postData.value, inBackground: true, allowThirdPartyFixup: false});
+            gBrowser.loadOneTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: true, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
             break;
 
         case "img-cur":
             // open imgs in current
-            loadURI(src, null, null, false);
+            loadURI(src, null, null, false, gBrowser.contentPrincipal.originAttributes.userContextId);
             break;
 
         case "save-img":
