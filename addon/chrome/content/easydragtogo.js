@@ -138,7 +138,7 @@ this.easyDragToGo = {
             this.onDropEvent.stopPropagation();
         }
         this.onStartEvent = this.onDropEvent = this.aDragSession = null;
-        console.error("cleaned");
+        console.info("cleaned");
     },
 
     dragsettimeout: function () {
@@ -521,7 +521,6 @@ this.easyDragToGo = {
             }
         } catch (e) {
         	console.error(e);
-        	console.error(e.description);
         }
 
         if (!fileName) fileName = aSrc.substr(aSrc.lastIndexOf('/') + 1);
