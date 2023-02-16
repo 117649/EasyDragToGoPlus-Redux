@@ -324,7 +324,7 @@ this.easyDragToGo = {
                 } catch (e) {}
 
                 //alert('uri:'+uri)
-                gBrowser.loadOneTab(uri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
+                gBrowser.addTab(uri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
             }
             break;
 
@@ -357,7 +357,7 @@ this.easyDragToGo = {
                 TreeStyleTabService.readyToOpenChildTab(gBrowser.selectedTab);
             } catch (e) {}
             // open imgs in new tab
-            gBrowser.loadOneTab(src, {triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
+            gBrowser.addTab(src, {triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
             break;
 
 
@@ -366,12 +366,12 @@ this.easyDragToGo = {
             //搜索相似图片(Google)
             var searchbyimageUrl=easyDragUtils.getPref("searchbyimageUrl", "");
             var searchuri = searchbyimageUrl + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.loadOneTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: false, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
+            gBrowser.addTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: false, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
             break;
 
         case "img-searchbg":
             var searchuri = "http://www.google.com/searchbyimage?image_url=" + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.loadOneTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: true, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
+            gBrowser.addTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: true, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
             break;
 
         case "img-cur":
