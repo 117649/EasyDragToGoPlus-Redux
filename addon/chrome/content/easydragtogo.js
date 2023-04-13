@@ -233,7 +233,7 @@ this.easyDragToGo = {
         }
 				
         if (!act) return;
-        var browser = getTopWin().gBrowser;
+        var browser = URILoadingHelper.getTargetWindow(window).gBrowser;
         var uri = "";
         var bg = true;
         var postData = {};
@@ -455,7 +455,7 @@ this.easyDragToGo = {
     getSearchSubmission: function (searchStr, action) {
         try {
             //site search
-            if (action.indexOf("-site") != -1) searchStr = "site:" + getTopWin().gBrowser.currentURI.host + " " + searchStr;
+            if (action.indexOf("-site") != -1) searchStr = "site:" + URILoadingHelper.getTargetWindow(window).gBrowser.currentURI.host + " " + searchStr;
 
             var ss = Components.classes["@mozilla.org/browser/search-service;1"].getService(Components.interfaces.nsISearchService);
             var engine, engineName;
@@ -548,7 +548,7 @@ this.easyDragToGo = {
         }
         // create a subdirectory with the domain name of current page
         if (easyDragUtils.getPref("saveDomainName", true)) {
-            var domainName = getTopWin().gBrowser.currentURI.host;
+            var domainName = URILoadingHelper.getTargetWindow(window).gBrowser.currentURI.host;
             if (domainName) {
                 fileSaving.append(domainName);
                 if (!fileSaving.exists() || !fileSaving.isDirectory()) {
