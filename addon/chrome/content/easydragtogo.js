@@ -591,7 +591,7 @@ this.easyDragToGo = {
             source: uri,
             target: fileSaving,
         };
-        const {Downloads} = Cu.import("resource://gre/modules/Downloads.jsm", {});
+        const {Downloads} = ChromeUtils.importESModule("resource://gre/modules/Downloads.sys.mjs", {});
         var downloadPromise = Downloads.createDownload(options)
         downloadPromise.then(function success(d) { d.start(); });
 

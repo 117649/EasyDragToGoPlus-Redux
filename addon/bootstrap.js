@@ -3,8 +3,7 @@
 "use strict";
 
 const { classes: Cc, interfaces: Ci, utils: Cu } = Components;
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/AddonManager.jsm");
+ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
 
 const appinfo = Services.appinfo;
 const options = {
