@@ -256,17 +256,12 @@ this.easyDragToGo = {
 
         switch (act) {
             //find text
-        case "search-find":
-            if(!gFindBarInitialized) {
-                gBrowser.finder.highlight(true, aURI)
-                gLazyFindCommand('onFindCommand').then(()=>{
-                gFindBar.toggleHighlight(true);
-                gFindBar.onFindAgainCommand(true);
-                gFindBar.onFindAgainCommand(false);});}
-            else{
-                gLazyFindCommand('onFindCommand').then(()=>{
-                gFindBar.toggleHighlight(true);});
-            }
+            case "search-find":
+            gBrowser.finder.highlight(true, aURI);
+            gLazyFindCommand('onFindCommand').then(() => {
+                gFindBar._findField.value = aURI;
+                gFindBar._find();
+            });
             return;
 
             //save text
