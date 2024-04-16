@@ -122,7 +122,7 @@ var easyDragSettings = {
       var picker = Components.interfaces.nsIFilePicker;
       var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(picker);
 
-      fp.init(window, null, picker.modeGetFolder);
+      fp.init(window.browsingContext, null, picker.modeGetFolder);
 
       try {
         var dir = Components.classes["@mozilla.org/file/local;1"]
