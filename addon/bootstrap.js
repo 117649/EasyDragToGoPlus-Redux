@@ -3,7 +3,7 @@
 "use strict";
 
 const { classes: Cc, interfaces: Ci, utils: Cu } = Components;
-ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
+const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
 
 const appinfo = Services.appinfo;
 const options = {
@@ -71,14 +71,12 @@ const documentObserver = {
     };
 
 function startup(data, reason) {
-  Components.utils.import("chrome://easydragtogo/content/defaultPreferencesLoader.jsm");
+  const { DefaultPreferencesLoader } = ChromeUtils.importESModule("chrome://easydragtogo/content/defaultPreferencesLoader.mjs");
   try {
     var loader = new DefaultPreferencesLoader();
     loader.parseUri(
       "chrome://easydragtogo-defaults/content/easydragtogo.js");
   } catch (ex) { }
-
-  Components.utils.import("chrome://easydragtogo/content/ChromeManifest.jsm");
 
   const window = Services.wm.getMostRecentWindow('navigator:browser');
   if (reason === ADDON_UPGRADE || reason === ADDON_DOWNGRADE) {
@@ -106,13 +104,12 @@ function startup(data, reason) {
     Services.obs.addObserver(documentObserver, "chrome-document-loaded");
   })();
 
-  (async function () {
-    try {
-      Services.prefs.getBoolPref("extensions.easydragtogo.hide_warning") ?
-        (await AddonManager.getAddonByID(`${data.id}`)).__AddonInternal__.signedState = AddonManager.SIGNEDSTATE_NOT_REQUIRED
-        : (await AddonManager.getAddonByID(`${data.id}`)).__AddonInternal__.signedState === AddonManager.SIGNEDSTATE_NOT_REQUIRED ? (await AddonManager.getAddonByID(`${data.id}`)).__AddonInternal__.signedState = AddonManager.SIGNEDSTATE_MISSING : '';
-    } catch (error) { }
-  }());
+  AddonManager.getAddonByID(data.id).then(addon => {
+    Services.prefs.getBoolPref("extensions.easydragtogo.hide_warning") ?
+      addon.__AddonInternal__.signedState = AddonManager.SIGNEDSTATE_NOT_REQUIRED
+      : addon.__AddonInternal__.signedState = AddonManager.SIGNEDSTATE_MISSING;
+    }
+  );
 }
 
 function shutdown(data, reason) {
