@@ -75,7 +75,7 @@ function startup(data, reason) {
   try {
     var loader = new DefaultPreferencesLoader();
     loader.parseUri(
-      "chrome://easydragtogo-defaults/content/easydragtogo.js");
+      "chrome://_easydragtogo/content/defaults/preferences/easydragtogo.js");
   } catch (ex) { }
 
   const window = Services.wm.getMostRecentWindow('navigator:browser');

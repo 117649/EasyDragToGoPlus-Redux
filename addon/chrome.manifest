@@ -1,5 +1,5 @@
 content    easydragtogo              chrome/content/
-content	   easydragtogo-defaults     defaults/preferences/
+content	   _easydragtogo             /
 
 skin       easydragtogo  classic/1.0  chrome/skin/classic/
 
