@@ -743,8 +743,8 @@ this.easyDragToGoDNDObserver = {
         	return 
        	};
 
-        var relX = aEvent.screenX - easyDragToGo.onStartEvent.screenX;
-        var relY = aEvent.screenY - easyDragToGo.onStartEvent.screenY;
+        var relX = aEvent.x - easyDragToGo.onStartEvent.x;
+        var relY = aEvent.y - easyDragToGo.onStartEvent.y;
         
         // do nothing with drag distance less than 3px
         if (Math.abs(relX) < 3 && Math.abs(relY) < 3) {
