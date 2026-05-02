@@ -13,17 +13,8 @@
     dlgbuttons="accept,cancel,extra1"
     buttonlabelextra1="&dialogButton.rstDefault;"
     onload="easyDragSettings.onLoad();"
-    ondialogaccept="return easyDragSettings.onAccept();"
-    ondialogextra1="easyDragSettings.rstDefault();"
     title="&easydragtogo.config.title;">  
 
-    <script type="text/javascript"><![CDATA[
-    let t = document.getElementsByTagName("dialog")[0];
-    let f = e => new Function("e", t.getAttribute("on" + e.type)).bind(t)();
-    t.addEventListener("dialogaccept", e => f(e));
-    t.addEventListener("dialogcancel", e => f(e));
-    t.addEventListener("dialogextra1", e => f(e));
-    ]]></script>
     <script type="application/x-javascript" src="chrome://easydragtogo/content/easydragtogoBinding.js"/>
     <script type="application/x-javascript" src="chrome://easydragtogo/content/easydragtogoConfig.js"/>
     <script type="application/x-javascript" src="chrome://easydragtogo/content/utils.js"/>
@@ -237,9 +228,9 @@
     </tabbox>
 
     <hbox id="dialogButtons">
-      <button dlgtype="extra1" id="myDefault"/>
+      <button dlgtype="extra1" id="myDefault" oncommand="easyDragSettings.rstDefault()"/>
       <spacer flex="1" />
-      <button dlgtype="accept" id="myAccept" />
+      <button dlgtype="accept" id="myAccept" oncommand="easyDragSettings.onAccept()"/>
       <button dlgtype="cancel" id="myCancel" />
     </hbox>
 </dialog>

@@ -36,7 +36,7 @@ this.easyDragToGo = {
 
     loaded: false,
     moving: false,
-    firstOver : true,
+    firstOver: true,
     StartAlready: false,
     onStartEvent: null,
     // drag start event
@@ -56,12 +56,12 @@ this.easyDragToGo = {
             var contentArea = gBrowser.tabpanels;
             if (!contentArea) console.info('EasyDragToGo+ failed to initialize!');
 
-        easyDragToGo._statusTextField =  window.StatusPanel;
+            easyDragToGo._statusTextField = window.StatusPanel;
 
             if (contentArea) {
 
                 contentArea.addEventListener('dragstart', easyDragToGo._listeners.dragstart = (e) => {
-										easyDragToGo.printDataTransferTypes(e);
+                    easyDragToGo.printDataTransferTypes(e);
                     if (e.target.nodeName == "A") {
                         var selectLinkText = document.commandDispatcher.focusedWindow.getSelection().toString();
                         if (selectLinkText != "" && e.explicitOriginalTarget == document.commandDispatcher.focusedWindow.getSelection().focusNode) {
@@ -77,25 +77,25 @@ this.easyDragToGo = {
 
                 contentArea.addEventListener('dragover', easyDragToGo._listeners.dragover = (e) => {
 
-									if (easyDragToGo._nodeAcceptsDrops(e.target)) {	//开启e10s后target永远是browser无法正确判断
-											console.info("dragover accpet drop clean.");
-									    easyDragToGo.clean();
-									    return;
-									}
+                    if (easyDragToGo._nodeAcceptsDrops(e.target)) {	//开启e10s后target永远是browser无法正确判断
+                        console.info("dragover accpet drop clean.");
+                        easyDragToGo.clean();
+                        return;
+                    }
 
-									var textStr = e.dataTransfer.getData("text/plain")|| e.dataTransfer.getData("text/x-moz-url");
-                  if(textStr){
-											e.preventDefault();	 //2016-10-02 SHP MOD
-											easyDragToGo.moving = true;
-											easyDragToGoDNDObserver.onDragOver(e)	//2016-10-02 SHP MOD
-											easyDragToGo.moving = false;
-                  }
+                    var textStr = e.dataTransfer.getData("text/plain") || e.dataTransfer.getData("text/x-moz-url");
+                    if (textStr) {
+                        e.preventDefault();	 //2016-10-02 SHP MOD
+                        easyDragToGo.moving = true;
+                        easyDragToGoDNDObserver.onDragOver(e)	//2016-10-02 SHP MOD
+                        easyDragToGo.moving = false;
+                    }
 
                 }, false, true);
 
                 contentArea.addEventListener('drop', easyDragToGo._listeners.drop = (e) => {
                     if (easyDragToGo._nodeAcceptsDrops(e.target)) {
-                    		//console.info("drop accpet drop clean.");
+                        //console.info("drop accpet drop clean.");
                         easyDragToGo.clean();
                         return;
                     }
@@ -106,15 +106,15 @@ this.easyDragToGo = {
 
                 contentArea.addEventListener('keyup', easyDragToGo._listeners.keyup = (e) => {
 
-                	if (e.keyCode == 27 ){
-                		console.info("escaped!");
-										easyDragToGo.clean();
-                	}
+                    if (e.keyCode == 27) {
+                        console.info("escaped!");
+                        easyDragToGo.clean();
+                    }
                 }, false);
 
                 easyDragToGo.onShut = () => {
                     contentArea.removeEventListener('dragstart', easyDragToGo._listeners.dragstart, true);
-                    contentArea.removeEventListener('dragover',  easyDragToGo._listeners.dragover, false);
+                    contentArea.removeEventListener('dragover', easyDragToGo._listeners.dragover, false);
                     contentArea.removeEventListener('drop', easyDragToGo._listeners.drop, false);
                     contentArea.removeEventListener('keyup', easyDragToGo._listeners.keyup, false);
                     easyDragToGo.loaded = false;
@@ -131,7 +131,6 @@ this.easyDragToGo = {
     },
 
     clean: function () {
-    		
         this.StartAlready = false;
         if (this.onDropEvent) {
             this.onDropEvent.preventDefault();
@@ -147,7 +146,7 @@ this.easyDragToGo = {
             clearTimeout(this.timeId);
             var event = {
                 notify: function (timer) {
-                		//console.error("timeout clean.");
+                    //console.error("timeout clean.");
                     easyDragToGo.clean()
                 }
             }
@@ -159,16 +158,16 @@ this.easyDragToGo = {
 
     //* The Original Code is FireGestures.
     setStatusText: function (aText) {
-       easyDragToGo._statusTextField._label = aText;
+        easyDragToGo._statusTextField._label = aText;
     },
     //* The Original Code is FireGestures.
     clearStatusText: function (aMillisec) {
-     if (easyDragToGo._clearStatusTimer) {
+        if (easyDragToGo._clearStatusTimer) {
             window.clearTimeout(easyDragToGo._clearStatusTimer);
             easyDragToGo._clearStatusTimer = null;
         }
         var text = easyDragToGo._statusTextField._label;
-        var callback = function(self) {
+        var callback = function (self) {
             self._clearStatusTimer = null;
             if (self._statusTextField._label == text)
                 self.setStatusText("");
@@ -179,7 +178,7 @@ this.easyDragToGo = {
     //在TAB打开链接方法
     //X,Y为拖拽方向
     // target 为拖拽类型
-    openURL: function (aEvent,aURI, src, target, X, Y) {
+    openURL: function (aEvent, aURI, src, target, X, Y) {
         if (!aURI) return;
         if (easyDragUtils.getPref("FirefoxTabOpen", true)) {
             aRelatedToCurrent = true;
@@ -199,25 +198,25 @@ this.easyDragToGo = {
             var directions = actionSets.split('|')[0];
 
             switch (directions) {
-            case "A":
-                // any direction
-                dir = "A";
-                break;
-            case "UD":
-                // up and down
-                dir = (Y > 0) ? "D" : "U";
-                break;
-            case "RL":
-                // right and left
-                dir = (X > 0) ? "R" : "L";
-                break;
-            case "RLUD":
-                // right left up down
-                if (X > Y)(X + Y > 0) ? (dir = "R") : (dir = "U");
-                else(X + Y > 0) ? (dir = "D") : (dir = "L");
-                break;
-            default:
-                return;
+                case "A":
+                    // any direction
+                    dir = "A";
+                    break;
+                case "UD":
+                    // up and down
+                    dir = (Y > 0) ? "D" : "U";
+                    break;
+                case "RL":
+                    // right and left
+                    dir = (X > 0) ? "R" : "L";
+                    break;
+                case "RLUD":
+                    // right left up down
+                    if (X > Y) (X + Y > 0) ? (dir = "R") : (dir = "U");
+                    else (X + Y > 0) ? (dir = "D") : (dir = "L");
+                    break;
+                default:
+                    return;
             }
             //console.info("X:"+X);
             //console.info("Y:"+Y);
@@ -227,11 +226,11 @@ this.easyDragToGo = {
             var re = new RegExp(dir + ':(.+?)(\\s+[ARLUD]:|$)', '');
             try {
                 if (re.test(actionSets)) act = RegExp.$1;
-            } catch (e) {}
+            } catch (e) { }
         } else {
             act = easyDragUtils.getPref(target, "link-fg");
         }
-				
+
         if (!act) return;
         var browser = URILoadingHelper.getTargetWindow(window).gBrowser;
         var uri = "";
@@ -251,191 +250,190 @@ this.easyDragToGo = {
 
             if (!act) alert("No Search Engines!");
         }
-        
+
         //console.info("action: " + act);
 
         switch (act) {
             //find text
             case "search-find":
-            gBrowser.finder.highlight(true, aURI);
-            gLazyFindCommand('onFindCommand').then(() => {
-                gFindBar._findField.value = aURI;
-                gFindBar._find();
-            });
-            return;
+                gBrowser.finder.highlight(true, aURI);
+                gLazyFindCommand('onFindCommand').then(() => {
+                    gFindBar._findField.value = aURI;
+                    gFindBar._find();
+                });
+                return;
 
             //save text
-        case "search-savetext":
-          saveURL("data:text/plain," + "From URL:"+encodeURIComponent(gBrowser.currentURI.spec + "\r\n\r\n" + document.commandDispatcher.focusedWindow.getSelection()), gBrowser.selectedTab.label + ".txt",null, true, true, undefined,document);
+            case "search-savetext":
+                saveURL("data:text/plain," + "From URL:" + encodeURIComponent(gBrowser.currentURI.spec + "\r\n\r\n" + document.commandDispatcher.focusedWindow.getSelection()), gBrowser.selectedTab.label + ".txt", null, true, true, undefined, document);
 
-            return;
+                return;
 
             //* The Original Code is http://www.cnblogs.com/ziyunfei/archive/2011/12/20/2293928.html
             //search-list
-        case "search-list":
-            try {
-                gURLBar.searchModeShortcut();
-                gURLBar.value = aURI;
-            } catch (e) {
-                alert("Easy DragToGo+ error :  Search In Urlbar. \n\n" + e.name + " :  " + e.message);
-                        }
-            return;
+            case "search-list":
+                try {
+                    gURLBar.searchModeShortcut();
+                    gURLBar.value = aURI;
+                } catch (e) {
+                    alert("Easy DragToGo+ error :  Search In Urlbar. \n\n" + e.name + " :  " + e.message);
+                }
+                return;
             //copyToClipboard
-        case "search-copyToClipboard":
-            Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper).copyString(aURI);
-            return;
+            case "search-copyToClipboard":
+                Components.classes["@mozilla.org/widget/clipboardhelper;1"].getService(Components.interfaces.nsIClipboardHelper).copyString(aURI);
+                return;
 
 
-        case "search-site":
-            bg = false;
+            case "search-site":
+                bg = false;
             //  alert('act is :'+act);
-        case "search-fg":
-        case "link-fg":
-            // open a new tab and selected it
-            bg = false;
+            case "search-fg":
+            case "link-fg":
+                // open a new tab and selected it
+                bg = false;
 
-        case "search-bg":
-        case "link-bg":
-        try {
-            if (!uri) uri = getShortcutOrURI(aURI, postData);
-        } catch (e) {
-            uri = aURI;
-            // alert(e.name  +   " :  "   +  e.message+aURI+postData);
-        }
+            case "search-bg":
+            case "link-bg":
+                try {
+                    if (!uri) uri = getShortcutOrURI(aURI, postData);
+                } catch (e) {
+                    uri = aURI;
+                    // alert(e.name  +   " :  "   +  e.message+aURI+postData);
+                }
 
 
-            try {
-                var cur = (!bg || browser.mTabs.length == 1) && browser.webNavigation.currentURI.spec == "about:blank" && !browser.mCurrentBrowser.webProgress.isLoadingDocument || (/^(javascript):/i.test(uri));
-                //Old code:     (/^(javascript|mailto):/i.test(uri));
-            } catch (e) {}
+                try {
+                    var cur = (!bg || browser.mTabs.length == 1) && browser.webNavigation.currentURI.spec == "about:blank" && !browser.mCurrentBrowser.webProgress.isLoadingDocument || (/^(javascript):/i.test(uri));
+                    //Old code:     (/^(javascript|mailto):/i.test(uri));
+                } catch (e) { }
 
-            if (cur)
-            // open in current tab
-            loadURI(uri, null, postData.value, true, gBrowser.contentPrincipal.originAttributes.userContextId);
-            else {
+                if (cur)
+                    // open in current tab
+                    loadURI(uri, null, postData.value, true, gBrowser.contentPrincipal.originAttributes.userContextId);
+                else {
+                    // for Tree Style Tab extension
+                    if ("TreeStyleTabService" in window && (target == "link" && !this.aDragSession.sourceNode.localName || target == "img")) try {	//2016-10-02 SHP COMMENT:这里会出现问题，aDragSession 已经木有，不过是针对树形tab扩展的，木有改
+                        TreeStyleTabService.readyToOpenChildTab(gBrowser.selectedTab);
+                    } catch (e) { }
+
+                    //alert('uri:'+uri)
+                    gBrowser.addTab(uri, { relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData: postData.value, inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId });
+                }
+                break;
+
+            case "search-cur":
+            case "link-cur":
+                // open in current
+                try {
+                    if (!uri) uri = getShortcutOrURI(aURI, postData);
+                } catch (e) {
+                    uri = aURI;
+                    // alert(e.name  +   " :  "   +  e.message+aURI+postData);
+                }
+                loadURI(uri, null, postData.value, true, gBrowser.contentPrincipal.originAttributes.userContextId, null, null, null, gBrowser.selectedBrowser.contentPrincipal);
+                break;
+
+            case "save-link":
+                // save links as...
+                //var doc = this.onStartEvent.target.ownerDocument;
+                var doc = aEvent.target.ownerDocument;
+                var ref = makeURI(doc.location.href, doc.characterSet);
+                saveURL(aURI, null, null, true, false, ref, doc);
+                break;
+
+            case "img-fg":
+                // open imgs in new tab and selected it
+                bg = false;
+            case "img-bg":
                 // for Tree Style Tab extension
-                if ("TreeStyleTabService" in window && (target == "link" && !this.aDragSession.sourceNode.localName || target == "img")) try {	//2016-10-02 SHP COMMENT:这里会出现问题，aDragSession 已经木有，不过是针对树形tab扩展的，木有改
+                if ("TreeStyleTabService" in window && target == "img") try {
                     TreeStyleTabService.readyToOpenChildTab(gBrowser.selectedTab);
-                } catch (e) {}
-
-                //alert('uri:'+uri)
-                gBrowser.addTab(uri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
-            }
-            break;
-
-        case "search-cur":
-        case "link-cur":
-            // open in current
-        try {
-            if (!uri) uri = getShortcutOrURI(aURI, postData);
-        } catch (e) {
-            uri = aURI;
-            // alert(e.name  +   " :  "   +  e.message+aURI+postData);
-        }
-            loadURI(uri, null, postData.value, true, gBrowser.contentPrincipal.originAttributes.userContextId, null, null, null, gBrowser.selectedBrowser.contentPrincipal);
-            break;
-
-        case "save-link":
-            // save links as...
-            //var doc = this.onStartEvent.target.ownerDocument;
-            var doc = aEvent.target.ownerDocument;
-            var ref = makeURI(doc.location.href, doc.characterSet);
-            saveURL(aURI, null, null, true, false, ref, doc);
-            break;
-
-        case "img-fg":
-            // open imgs in new tab and selected it
-            bg = false;
-        case "img-bg":
-            // for Tree Style Tab extension
-            if ("TreeStyleTabService" in window && target == "img") try {
-                TreeStyleTabService.readyToOpenChildTab(gBrowser.selectedTab);
-            } catch (e) {}
-            // open imgs in new tab
-            gBrowser.addTab(src, {triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
-            break;
+                } catch (e) { }
+                // open imgs in new tab
+                gBrowser.addTab(src, { triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), inBackground: bg, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId });
+                break;
 
 
             //* The Original Code is http://www.cnblogs.com/ziyunfei/archive/2011/12/20/2293928.html
-        case "img-searchfg":
-            //搜索相似图片(Google)
-            var searchbyimageUrl=easyDragUtils.getPref("searchbyimageUrl", "");
-            var searchuri = searchbyimageUrl + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.addTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: false, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
-            break;
+            case "img-searchfg":
+                //搜索相似图片(Google)
+                var searchbyimageUrl = easyDragUtils.getPref("searchbyimageUrl", "");
+                var searchuri = searchbyimageUrl + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
+                gBrowser.addTab(searchuri, { relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData: postData.value, inBackground: false, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId });
+                break;
 
-        case "img-searchbg":
-            var searchuri = "http://www.google.com/searchbyimage?image_url=" + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
-            gBrowser.addTab(searchuri, {relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData:postData.value, inBackground: true, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId});
-            break;
+            case "img-searchbg":
+                var searchuri = "http://www.google.com/searchbyimage?image_url=" + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
+                gBrowser.addTab(searchuri, { relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData: postData.value, inBackground: true, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId });
+                break;
 
-        case "img-cur":
-            // open imgs in current
-            loadURI(src, null, null, false, gBrowser.contentPrincipal.originAttributes.userContextId);
-            break;
+            case "img-cur":
+                // open imgs in current
+                loadURI(src, null, null, false, gBrowser.contentPrincipal.originAttributes.userContextId);
+                break;
 
-        case "save-img":
-            // save imgs as...
-            var doc = aEvent.target.ownerDocument;
-            saveImageURL(src, null, "SaveImageTitle",
-                             false, false, doc.documentURIObject, doc);
-            break;
+            case "save-img":
+                // save imgs as...
+                var doc = aEvent.target.ownerDocument;
+                saveImageURL(src, null, "SaveImageTitle", false, false, doc.documentURIObject, doc);
+                break;
 
-        case "save-df-img":
-            // direct save imgs to folder
-            var doc = aEvent.target.ownerDocument;
-            var err = this.saveimg(src, doc, 1);
-            if (err) alert("Saving image failed: " + err);
-            break;
+            case "save-df-img":
+                // direct save imgs to folder
+                var doc = aEvent.target.ownerDocument;
+                var err = this.saveimg(src, doc, 1);
+                if (err) alert("Saving image failed: " + err);
+                break;
 
-        case "save-df-img2":
-            // direct save imgs to folder
-            var doc = aEvent.target.ownerDocument;
-            var err = this.saveimg(src, doc, 2);
-            if (err) alert("Saving image failed: " + err);
-            break;
+            case "save-df-img2":
+                // direct save imgs to folder
+                var doc = aEvent.target.ownerDocument;
+                var err = this.saveimg(src, doc, 2);
+                if (err) alert("Saving image failed: " + err);
+                break;
 
-        case "save-df-img3":
-            // direct save imgs to folder
-            var doc = aEvent.target.ownerDocument;
-            var err = this.saveimg(src, doc, 3);
-            if (err) alert("Saving image failed: " + err);
-            break;
+            case "save-df-img3":
+                // direct save imgs to folder
+                var doc = aEvent.target.ownerDocument;
+                var err = this.saveimg(src, doc, 3);
+                if (err) alert("Saving image failed: " + err);
+                break;
 
-        case "save-df-img4":
-            // direct save imgs to folder
-            var doc = aEvent.target.ownerDocument;
-            var err = this.saveimg(src, doc, 4);
-            if (err) alert("Saving image failed: " + err);
-            break;
-        default:
-            // for custom
-            if (/^custom#(.+)/.test(act)) {
-                var custom = RegExp.$1;
-                if (custom) {
-                    var code = easyDragUtils.getPref("custom." + custom, "return");
-                    if (code) {
+            case "save-df-img4":
+                // direct save imgs to folder
+                var doc = aEvent.target.ownerDocument;
+                var err = this.saveimg(src, doc, 4);
+                if (err) alert("Saving image failed: " + err);
+                break;
+            default:
+                // for custom
+                if (/^custom#(.+)/.test(act)) {
+                    var custom = RegExp.$1;
+                    if (custom) {
+                        var code = easyDragUtils.getPref("custom." + custom, "return");
+                        if (code) {
                             this.customCode(code, aURI, src, target, X, Y);
+                        }
                     }
                 }
-            }
-            // do nothing
-            break;
+                // do nothing
+                break;
         }
     },
 
-             getsrc:function(){
-    return _src;
-},
+    getsrc: function () {
+        return _src;
+    },
 
 
     customCode: function (code, url, src, target, X, Y) {
         var customFn = new Function("target", "url", "src", "X", "Y", code);
         var runcustomjs = Function()
         {
-        customFn(target, url, src, X, Y);
+            customFn(target, url, src, X, Y);
         }
-         try {
+        try {
             let context = Components.utils.getGlobalForObject({});
             let aSandbox = new Components.utils.Sandbox(context, {
                 sandboxPrototype: context,
@@ -443,7 +441,7 @@ this.easyDragToGo = {
             });
             aSandbox.importFunction(runcustomjs);
         } catch (ex) {
-          alert("Easy DragToGo+ Error: \n" + ex );
+            alert("Easy DragToGo+ Error: \n" + ex);
         }
     },
 
@@ -452,16 +450,19 @@ this.easyDragToGo = {
             //site search
             if (action.indexOf("-site") != -1) searchStr = "site:" + URILoadingHelper.getTargetWindow(window).gBrowser.currentURI.host + " " + searchStr;
 
-            var ss = Components.classes["@mozilla.org/browser/search-service;1"].getService(Components.interfaces.nsISearchService);
+            const searchbar_new = document.getElementById("searchbar-new");
+            var ss = this.SearchService;
             var engine, engineName;
             if (/^search-(.+?)-?(fg|bg|cur|site)$/.test(action)) engineName = RegExp.$1;
             else engineName = "c";
 
-            if (engineName == "c") engine = ss.currentEngine || ss.defaultEngine;
-            else if (engineName == "d") engine = ss.defaultEngine || ss.currentEngine;
+            let d = PrivateBrowsingUtils.isBrowserPrivate(gBrowser.selectedTab.linkedBrowser) ? ss.defaultPrivateEngine : ss.defaultEngine;
+            let c = (searchbar_new && window.getComputedStyle(searchbar_new).display !== "none" && ss.getEngineByName(searchbar_new.searchMode?.engineName) || ss.getEngineByName(gURLBar.searchMode?.engineName)) ?? d;
+            if (engineName == "c") engine = c ?? d;
+            else if (engineName == "d") engine = d ?? c;
             else {
                 engine = ss.getEngineByName(engineName);
-                if (!engine) engine = ss.currentEngine || ss.defaultEngine;
+                if (!engine) engine = c ?? d;
             }
             return engine.getSubmission(searchStr, null);
         } catch (e) {
@@ -476,21 +477,21 @@ this.easyDragToGo = {
 
         var path = easyDragUtils.getDownloadFolder();
         switch (dirid) {
-        case 2:
-            path = easyDragUtils.getDownloadFolder2();
-            break;
-        case 3:
-            path = easyDragUtils.getDownloadFolder3();
-            break;
-        case 4:
-            path = easyDragUtils.getDownloadFolder4();
-            break;
+            case 2:
+                path = easyDragUtils.getDownloadFolder2();
+                break;
+            case 3:
+                path = easyDragUtils.getDownloadFolder3();
+                break;
+            case 4:
+                path = easyDragUtils.getDownloadFolder4();
+                break;
         }
 
         if (path == "U" || path == "u") {
             path = Components.classes["@mozilla.org/file/directory_service;1"].
-            getService(Components.interfaces.nsIProperties).
-            get("DefRt", Components.interfaces.nsIFile).path;
+                getService(Components.interfaces.nsIProperties).
+                get("DefRt", Components.interfaces.nsIFile).path;
         }
 
         var fileName = null;
@@ -498,8 +499,8 @@ this.easyDragToGo = {
 
         try {
             var imageCache = Components.classes["@mozilla.org/image/tools;1"]
-                                       .getService(Components.interfaces.imgITools)
-                                       .getImgCacheForDocument(aDoc);
+                .getService(Components.interfaces.imgITools)
+                .getImgCacheForDocument(aDoc);
 
             var props = imageCache.findEntryProperties(makeURI(aSrc, getCharsetforSave(null)), aDoc);
 
@@ -512,10 +513,10 @@ this.easyDragToGo = {
             if (props.has("content-disposition")) {
                 contentDisposition = props.get("content-disposition", nsISupportsCString);
                 mhp = Components.classes["@mozilla.org/network/mime-hdrparam;1"].getService(Ci.nsIMIMEHeaderParam)
-                fileName = mhp.getParameter(contentDisposition, "filename", aDoc.characterSet, true, {value: null});
+                fileName = mhp.getParameter(contentDisposition, "filename", aDoc.characterSet, true, { value: null });
             }
         } catch (e) {
-        	console.error(e);
+            console.error(e);
         }
 
         if (!fileName) fileName = aSrc.substr(aSrc.lastIndexOf('/') + 1);
@@ -528,17 +529,17 @@ this.easyDragToGo = {
             var vMon2 = vMon < 10 ? "0" + vMon : vMon;
             var vDay = d.getDate();
             var vDay2 = vDay < 10 ? "0" + vDay : vDay;
-            fileName = d.getFullYear() + "-" + vMon2 + "-" + vDay2 + " " +  decodeURI(fileName);
+            fileName = d.getFullYear() + "-" + vMon2 + "-" + vDay2 + " " + decodeURI(fileName);
         }
 
         if (!fileName) return "No image!";
 
         var fileSaving = Components.classes["@mozilla.org/file/local;1"].
-        createInstance(Components.interfaces.nsIFile);
-        try{
+            createInstance(Components.interfaces.nsIFile);
+        try {
             fileSaving.initWithPath(path);
             if (!fileSaving.exists() || !fileSaving.isDirectory()) return "The download folder does not exist!";
-        }catch(e){
+        } catch (e) {
             return "Invalid download path";
         }
         // create a subdirectory with the domain name of current page
@@ -573,11 +574,11 @@ this.easyDragToGo = {
         }
 
         var cacheKey = Components.classes['@mozilla.org/supports-string;1'].
-                       createInstance(Components.interfaces.nsISupportsString);
+            createInstance(Components.interfaces.nsISupportsString);
         cacheKey.data = aSrc;
 
         var urifix = Components.classes['@mozilla.org/docshell/uri-fixup;1'].
-                     getService(Components.interfaces.nsIURIFixup);
+            getService(Components.interfaces.nsIURIFixup);
         var uri = urifix.getFixupURIInfo(aSrc, 0).preferredURI;
         var hosturi = null;
         if (uri.host.length > 0) hosturi = urifix.getFixupURIInfo(uri.host, 0).preferredURI;
@@ -586,7 +587,7 @@ this.easyDragToGo = {
             source: uri,
             target: fileSaving,
         };
-        const {Downloads} = ChromeUtils.importESModule("resource://gre/modules/Downloads.sys.mjs", {});
+        const { Downloads } = ChromeUtils.importESModule("resource://gre/modules/Downloads.sys.mjs", {});
         var downloadPromise = Downloads.createDownload(options)
         downloadPromise.then(function success(d) { d.start(); });
 
@@ -614,7 +615,6 @@ this.easyDragToGo = {
     // Wrapper for nsDragAndDrop.js's data retrieval; see nsDragAndDrop.drop
     // not used now
     _getDragData: function (aEvent) {
-    		
         var data = "";
         var type = "text/unicode";
 
@@ -652,23 +652,23 @@ this.easyDragToGo = {
             if (code >= 65281 && code <= 65373) str += String.fromCharCode(code - 65248);
             else str += url.charAt(i);
         }
-        str = this.fixupSchemer(str,true);
+        str = this.fixupSchemer(str, true);
         str = this.SecurityCheckURL(str);
         return str;
     },
     //* The Original Code is QuickDrag.
     _nodeAcceptsDrops: function (node) {
-    	//console.error(node);
-    	
-	        if (!node){ return false };
-	
-	        return ( (node.nodeName == "TEXTAREA")
-	        			|| ("mozIsTextField" in node && node.mozIsTextField(false))
-	        			|| ("isContentEditable" in node && node.isContentEditable)
-	        			|| ("ownerDocument" in node && "designMode" in node.ownerDocument && node.ownerDocument.designMode.toLowerCase() == "on")
-	        			|| (node.hasAttribute("dropzone") && node.getAttribute("dropzone").replace(/^\s+|\s+$/g, "").length)
-	        			);
-	  },
+        //console.error(node);
+
+        if (!node) { return false };
+
+        return ((node.nodeName == "TEXTAREA")
+            || ("mozIsTextField" in node && node.mozIsTextField(false))
+            || ("isContentEditable" in node && node.isContentEditable)
+            || ("ownerDocument" in node && "designMode" in node.ownerDocument && node.ownerDocument.designMode.toLowerCase() == "on")
+            || (node.hasAttribute("dropzone") && node.getAttribute("dropzone").replace(/^\s+|\s+$/g, "").length)
+        );
+    },
     SecurityCheckURL: function (aURI) {
         if (/^data:/.test(aURI)) return "";
         if (/^javascript:/.test(aURI)) return aURI;
@@ -680,21 +680,21 @@ this.easyDragToGo = {
             secMan.checkLoadURIStr(sourceURL, aURI, nsIScriptSecMan.STANDARD);
         } catch (e) {
             var strlist = /(\.com)|(\.net)|(\.org)|(\.gov.cn)|(\.info)|(\.cn)|(\.cc)|(\.com.cn)|(\.net.cn)|(\.org.cn)|(\.name)|(\.biz)|(\.tv)|(\.la)/ig;
-          //  if (strlist.test(aURI)) aURI = "http://" + aURI;
+            //  if (strlist.test(aURI)) aURI = "http://" + aURI;
         }
 
-      /*   try {
-            secMan.checkLoadURIStr(sourceURL, aURI, nsIScriptSecMan.STANDARD);
-        } catch (e) {
-           aURI = "";
-        } */
+        /*   try {
+              secMan.checkLoadURIStr(sourceURL, aURI, nsIScriptSecMan.STANDARD);
+          } catch (e) {
+             aURI = "";
+          } */
         return aURI;
     },
-    fixupSchemer: function (aURI,isURL) {
+    fixupSchemer: function (aURI, isURL) {
         var RegExpURL = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
         if (aURI.match(RegExpURL)) return aURI;
 
-         if (isURL && /^(?::\/\/|\/\/|\/)?(([1-2]?\d?\d\.){3}[1-2]?\d?\d(\/.*)?|[a-z]+[\-\w]+\.[\-\w\.]+(\/.*)?)$/i.test(aURI)) aURI = "http://" + RegExp.$1;
+        if (isURL && /^(?::\/\/|\/\/|\/)?(([1-2]?\d?\d\.){3}[1-2]?\d?\d(\/.*)?|[a-z]+[\-\w]+\.[\-\w\.]+(\/.*)?)$/i.test(aURI)) aURI = "http://" + RegExp.$1;
         else if (/^\w+[\-\.\w]*@(\w+(\-+\w+)*\.)+\w{2,7}$/.test(aURI) && !easyDragUtils.getPref("dragtogoEmailSearch", true)) aURI = "mailto:" + aURI;
         else {
             var table = "ttp=>http,tp=>http,p=>http,ttps=>https,tps=>https,ps=>https,s=>https";
@@ -707,16 +707,19 @@ this.easyDragToGo = {
         }
         return aURI;
     },
-    printDataTransferTypes : function(ev){
+    printDataTransferTypes: function (ev) {
         var dt = ev.dataTransfer;
 
         console.info("print dataTransfer type:");
         var types = dt.types;
-        for(var i = 0; i < types.length; i+=1){
-        	console.info(types[i] + ": " + dt.getData(types[i]));	
+        for (var i = 0; i < types.length; i += 1) {
+            console.info(types[i] + ": " + dt.getData(types[i]));
         }
     }
 };
+ChromeUtils.defineESModuleGetters(this.easyDragToGo, {
+    SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
+});
 
 
 this.easyDragToGoDNDObserver = {
@@ -738,40 +741,40 @@ this.easyDragToGoDNDObserver = {
 
     onDrop: function (aEvent) {
 
-        if (!easyDragToGo.StartAlready){ 
-        	easyDragToGo.clean();
-        	return 
-       	};
+        if (!easyDragToGo.StartAlready) {
+            easyDragToGo.clean();
+            return
+        };
 
         var relX = aEvent.x - easyDragToGo.onStartEvent.x;
         var relY = aEvent.y - easyDragToGo.onStartEvent.y;
-        
+
         // do nothing with drag distance less than 3px
         if (Math.abs(relX) < 3 && Math.abs(relY) < 3) {
-        		//console.error("shot distance clean.");
+            //console.error("shot distance clean.");
             easyDragToGo.clean();
             return;
         }
-				// Drag and Drop from Content area
+        // Drag and Drop from Content area
         easyDragToGo.onDropEvent = aEvent;
 
         var dt = aEvent.dataTransfer;
-        
+
         console.info("drop types print:");
         var types = dt.types;
 
-        for(var i = 0; i < types.length; i+=1){
-        	console.info(types[i] + ": " + dt.getData(types[i]));	
+        for (var i = 0; i < types.length; i += 1) {
+            console.info(types[i] + ": " + dt.getData(types[i]));
         }
 
         var textStr = dt.getData("text/plain");
         console.info("");
         console.info("textStr: " + textStr);
 
-        if (!textStr){
-        	textStr = dt.getData("text/x-moz-url");
-        	textStr = textStr.split(/(\r\n|\n)/)[0];
-	        console.info("textStrReplace: " + textStr);
+        if (!textStr) {
+            textStr = dt.getData("text/x-moz-url");
+            textStr = textStr.split(/(\r\n|\n)/)[0];
+            console.info("textStrReplace: " + textStr);
         }
 
         var type = "STRING";	//拖拽内容类型:STRING,URL
@@ -780,13 +783,13 @@ this.easyDragToGoDNDObserver = {
         var url = textStr.replace(/\r\n/g, "\n").replace(/\r/g, "\n");	//2016-10-02 SHP MOD
         url = url.replace(/^[\s\n]+|[\s\n]+$/g, '');
 
-				//console.error("url:" + url);
+        //console.error("url:" + url);
 
-				if (!(/\s|\n/.test(url)) && (/^([a-z]{2,7}:\/\/|mailto:|about:|javascript:)/i.test(url))) {
-            		type = "URL";
+        if (!(/\s|\n/.test(url)) && (/^([a-z]{2,7}:\/\/|mailto:|about:|javascript:)/i.test(url))) {
+            type = "URL";
         }// else STRING
 
-				//console.error("type:" + type);
+        //console.error("type:" + type);
 
         var src; //资源地址
         if (url && type == "URL") {
@@ -795,15 +798,15 @@ this.easyDragToGoDNDObserver = {
 
             var promiseUrl = dt.getData("application/x-moz-file-promise-url");
             var dragHtml = dt.getData("text/html");
-            
-						var parser = new DOMParser();
-						var doc = parser.parseFromString(dragHtml, "text/html");
-						
-						//console.error(doc);
-						var hasImg = doc.getRootNode().body?.firstElementChild?.tagName == "IMG";
+
+            var parser = new DOMParser();
+            var doc = parser.parseFromString(dragHtml, "text/html");
+
+            //console.error(doc);
+            var hasImg = doc.getRootNode().body?.firstElementChild?.tagName == "IMG";
 
             if (hasImg) {
-								src = promiseUrl;
+                src = promiseUrl;
                 target = "img";
 
             } else if (aEvent.ctrlKey) {
@@ -823,31 +826,31 @@ this.easyDragToGoDNDObserver = {
                 if (url) target = "link";
                 else url = tmpurl;
             } else if (easyDragToGo.seemAsURL(url)) { //seem as a url
-                url = easyDragToGo.fixupSchemer(url,true);
+                url = easyDragToGo.fixupSchemer(url, true);
                 url = easyDragToGo.SecurityCheckURL(url);
                 if (!url) { // not a url, search it
                     url = tmpurl;
                     target = "text";
-                 }
-             } else //it's a text string, so search it
-             target = "text";
+                }
+            } else //it's a text string, so search it
+                target = "text";
         }
 
-				url = easyDragToGo.fixupSchemer(url,false);
-				url = easyDragToGo.SecurityCheckURL(url);
+        url = easyDragToGo.fixupSchemer(url, false);
+        url = easyDragToGo.SecurityCheckURL(url);
 
-				console.info("");
-				console.info("url: " + url);
-				console.info("src: " + src);
-				console.info("target: " + target);
+        console.info("");
+        console.info("url: " + url);
+        console.info("src: " + src);
+        console.info("target: " + target);
 
-				easyDragToGo.openURL(aEvent,url, src, target, relX, relY);
+        easyDragToGo.openURL(aEvent, url, src, target, relX, relY);
 
-				//easyDragToGo.openURL(aEvent,url, src, target, relX, relY)
+        //easyDragToGo.openURL(aEvent,url, src, target, relX, relY)
 
-				//console.error("Drop clean.");
-     		easyDragToGo.clean();
- 		}
+        //console.error("Drop clean.");
+        easyDragToGo.clean();
+    }
 };
 
 PlacesUIUtils.canLoadToolbarContentPromise.then(easyDragToGo.onLoad());

@@ -8,6 +8,17 @@
 // leaking to window scope.
 {
 
+  const lazy = {};
+
+  ChromeUtils.defineESModuleGetters(lazy, {
+    SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
+  });
+
+  const rWindow = Services.wm.getMostRecentBrowserWindow();
+  const hasCurrent = rWindow.getComputedStyle(rWindow.document.getElementById("searchbar-new")).display !== "none";
+  const currentEngine = lazy.SearchService.getEngineByName(rWindow.document.getElementById("searchbar-new")?.searchMode?.engineName);
+  const isPrivate = rWindow.PrivateBrowsingUtils.isWindowPrivate(rWindow);
+
   class MozGMenuFunc extends MozXULElement {
     constructor() {
       super();
@@ -76,14 +87,17 @@
       var menu = this.childNodes[1].childNodes[1];
       menu.value = val;
       try {
-        if ((val == "d") && menu.getAttribute("label").indexOf("[") == -1) {
-          var ss = Components.classes["@mozilla.org/browser/search-service;1"].
-          getService(Components.interfaces.nsISearchService);
-          if (val == "d" && ss.defaultEngine)
-            menu.setAttribute("label", menu.getAttribute("label") + "[" + ss.defaultEngine.name + "]");
-        } else if (val != "d")
+        if ((val == "c" || val == "d") && menu.getAttribute("label").indexOf("[") == -1) {
+          var ss = lazy.SearchService;
+          let d = isPrivate ? ss.defaultPrivateEngine : ss.defaultEngine;
+          if (val == "c" && hasCurrent)
+            menu.setAttribute("label", menu.getAttribute("label") + "[" + (currentEngine ?? d).name + "]");
+          else if (val == "d" || val == "c" && d && !hasCurrent)
+            menu.setAttribute("label", menu.getAttribute("label") + "[" + d.name + "]");
+        }
+        else if (val != "c" && val != "d")
           menu.setAttribute("label", val);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     get _engine() {
@@ -152,15 +166,17 @@
         <hbox class="easydragtogo-Menu">
           <label value="&settings.search-engine;"/>
           <menulist class="easydragtogo-Menu" minwidth="&gesture.menuEngine.width;">
-            <menupopup maxheight="250px" defaultenginelabel="&settings.engine-default;" onpopupshowing="easyDragSettings.createEnginesList(this);">
+            <menupopup maxheight="250px" defaultenginelabel="&settings.engine-default;" onpopupshowing="">
               <menuitem value="d" label="&settings.engine-default;"/>
+              <menuitem value="c" label="&settings.engine-current;"/>
               <separator class="groove"/>
             </menupopup>
           </menulist>
         </hbox>
       `, ["chrome://easydragtogo/locale/easydragtogoConfig.dtd"]));
 
-      this.querySelector("menuitem[value=do-nothing]").previousSibling.value??='img';
+      this.querySelector("menuitem[value=do-nothing]").previousSibling.value ??= 'img';
+      this.querySelector("menupopup[onpopupshowing]").addEventListener("popupshowing", e => easyDragSettings.createEnginesList(e.target));
       this.initialize();
     }
   }
