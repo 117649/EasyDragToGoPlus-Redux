@@ -20,26 +20,33 @@ radio.direc-any hbox.radio-label-box{
     list-style-image: url("directions_any.png") !important;;
 }
 menulist.easydragtogo-Menu{
-    -moz-box-flex:1;
+    flex-grow: 1;
 }
 row.easydragtogo-Menu{
-    height: 27px;
-    margin:2px 5px !important;
-    -moz-box-align:center;
+    margin: 2px 5px !important;
+    align-items: center;
 }
 hbox.easydragtogo-Menu{
-    -moz-box-align:center;
+    align-items: center;
 }
 
-separator.groove[hidden=true] {
+separator.groove[hidden=true]{
     display: none;
 }
 
-rows {
+tabpanels{
     display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 12px;
 }
-
-row {
-    display: inline-flex;
-    align-items: center;
+grid, columns, rows{
+    display: contents;
+}
+tabpanel, fieldset, row{
+    display: grid;
+    grid-template-columns: subgrid;
+    align-content: first baseline;
+}
+tabpanel, tabpanel > *, fieldset, fieldset > *, row, row > hbox{
+    grid-column: 1 / -1;
 }
