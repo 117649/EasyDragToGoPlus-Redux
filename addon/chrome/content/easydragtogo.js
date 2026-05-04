@@ -273,10 +273,25 @@ this.easyDragToGo = {
             //search-list
             case "search-list":
                 try {
-                    gURLBar.searchModeShortcut();
-                    gURLBar.value = aURI;
+                    const search_container = document.getElementById("search-container");
+                    if (search_container) {
+                        const searchbar_new = document.getElementById("searchbar-new");
+                        const searchbar = document.getElementById("searchbar");
+                        if (window.getComputedStyle(searchbar_new).display !== "none") {
+                            searchbar_new.value = aURI;
+                            searchbar_new.searchModeShortcut();
+                        } else {
+                            searchbar.inputField.value = aURI;
+                            searchbar.openSuggestionsPanel(true);
+                            searchbar.inputField.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+                            setTimeout(_ => { if (searchbar.inputField.focused) searchbar.inputField.dispatchEvent(new MouseEvent("mousedown", { bubbles: true })); }, 600);
+                        }
+                    } else {
+                        gURLBar.value = aURI;
+                        gURLBar.searchModeShortcut();
+                    }
                 } catch (e) {
-                    alert("Easy DragToGo+ error :  Search In Urlbar. \n\n" + e.name + " :  " + e.message);
+                    alert("Easy DragToGo+ error :  Search In Search/Urlbar. \n\n" + e.name + " :  " + e.message);
                 }
                 return;
             //copyToClipboard
