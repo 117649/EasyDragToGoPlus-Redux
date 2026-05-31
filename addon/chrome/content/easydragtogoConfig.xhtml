@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://easydragtogo/skin/easydragtogo.css" type="text/css"?>
@@ -12,7 +12,6 @@
   xmlns:html="http://www.w3.org/1999/xhtml" 
   dlgbuttons="accept,cancel,extra1" 
   buttonlabelextra1="&dialogButton.rstDefault;" 
-  onload="easyDragSettings.onLoad();" 
   title="&easydragtogo.config.title;">
 
   <script type="application/x-javascript" src="chrome://easydragtogo/content/easydragtogoBinding.js"/>
@@ -196,22 +195,22 @@
           <hbox align="center">
             <label value="&settings.save-df-dir;"/>
             <html:input id="imgSaveFloder-text" flex="1"/>
-            <button id="imgSaveFloder-browserButton" label="&floderBrowse;" oncommand="easyDragSettings.browseDir('')" />
+            <button id="imgSaveFloder-browserButton" label="&floderBrowse;" />
           </hbox>
           <hbox align="center">
             <label value="&settings.save-df-dir2;"/>
             <html:input id="imgSaveFloder-text_2" flex="1"/>
-            <button id="imgSaveFloder-browserButton_2" label="&floderBrowse;" oncommand="easyDragSettings.browseDir('_2')" />
+            <button id="imgSaveFloder-browserButton_2" label="&floderBrowse;" />
           </hbox>
           <hbox align="center">
             <label value="&settings.save-df-dir3;"/>
             <html:input id="imgSaveFloder-text_3" flex="1"/>
-            <button id="imgSaveFloder-browserButton_3" label="&floderBrowse;" oncommand="easyDragSettings.browseDir('_3')" />
+            <button id="imgSaveFloder-browserButton_3" label="&floderBrowse;" />
           </hbox>
           <hbox align="center">
             <label value="&settings.save-df-dir4;"/>
             <html:input id="imgSaveFloder-text_4" flex="1"/>
-            <button id="imgSaveFloder-browserButton_4" label="&floderBrowse;" oncommand="easyDragSettings.browseDir('_4')" />
+            <button id="imgSaveFloder-browserButton_4" label="&floderBrowse;" />
           </hbox>
           <hbox align="center">
             <checkbox id="saveDomainName" label="&saveDomainName.label;"/>
@@ -225,9 +224,9 @@
   </tabbox>
 
   <hbox id="dialogButtons">
-    <button dlgtype="extra1" id="myDefault" oncommand="easyDragSettings.rstDefault()"/>
+    <button dlgtype="extra1" id="myDefault"/>
     <spacer flex="1" />
-    <button dlgtype="accept" id="myAccept" oncommand="easyDragSettings.onAccept()"/>
+    <button dlgtype="accept" id="myAccept"/>
     <button dlgtype="cancel" id="myCancel" />
   </hbox>
 </dialog>

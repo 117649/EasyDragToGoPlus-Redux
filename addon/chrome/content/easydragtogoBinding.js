@@ -166,7 +166,7 @@
         <hbox class="easydragtogo-Menu">
           <label value="&settings.search-engine;"/>
           <menulist class="easydragtogo-Menu" minwidth="&gesture.menuEngine.width;">
-            <menupopup maxheight="250px" defaultenginelabel="&settings.engine-default;" onpopupshowing="">
+            <menupopup maxheight="250px" defaultenginelabel="&settings.engine-default;">
               <menuitem value="d" label="&settings.engine-default;"/>
               <menuitem value="c" label="&settings.engine-current;"/>
               <separator class="groove"/>
@@ -176,7 +176,7 @@
       `, ["chrome://easydragtogo/locale/easydragtogoConfig.dtd"]));
 
       this.querySelector("menuitem[value=do-nothing]").previousSibling.value ??= 'img';
-      this.querySelector("menupopup[onpopupshowing]").addEventListener("popupshowing", e => easyDragSettings.createEnginesList(e.target));
+      this.querySelector("menupopup[defaultenginelabel]").addEventListener("popupshowing", e => easyDragSettings.createEnginesList(e.target));
       this.initialize();
     }
   }

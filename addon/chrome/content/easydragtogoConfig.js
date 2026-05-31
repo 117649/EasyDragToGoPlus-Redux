@@ -51,6 +51,13 @@ var easyDragSettings = {
       }
     }
 
+    var browseButtonSuffixes = ["", "_2", "_3", "_4"];
+    for (let suffix of browseButtonSuffixes) {
+      document.getElementById("imgSaveFloder-browserButton" + suffix)?.addEventListener("command", () => this.browseDir(suffix));
+    }
+    document.getElementById("myDefault")?.addEventListener("command", () => this.rstDefault());
+    document.getElementById("myAccept")?.addEventListener("command", () => this.onAccept());
+
     var aPref = easyDragUtils.getPref("fromContentOuter.text", "search-d-fg");
     if (aPref.indexOf("search-") == 0)
       this.setSearchEngine(document.getElementById("textFromContentOuter"), aPref);
@@ -181,3 +188,5 @@ var easyDragSettings = {
     document.getElementById("EasydragtogoTimeout-text").disabled = 0;
   }
 };
+
+window.addEventListener("load", () => easyDragSettings.onLoad(), { once: true });
