@@ -265,7 +265,7 @@ this.easyDragToGo = {
 
             //save text
             case "search-savetext":
-                saveURL("data:text/plain," + "From URL:" + encodeURIComponent(gBrowser.currentURI.spec + "\r\n\r\n" + document.commandDispatcher.focusedWindow.getSelection()), gBrowser.selectedTab.label + ".txt", null, true, true, undefined, document);
+                saveURL("data:text/plain," + "From URL:" + encodeURIComponent(gBrowser.currentURI.spec + "\r\n\r\n" + document.commandDispatcher.focusedWindow.getSelection()), null, gBrowser.selectedTab.label + ".txt", null, true, true, undefined, undefined, document);
 
                 return;
 
