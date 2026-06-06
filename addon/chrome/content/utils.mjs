@@ -1,7 +1,7 @@
 ﻿// Code by Sunwan
 //
 
-this.easyDragUtils = {
+export const easyDragUtils = {
 
     pref:           Components.classes['@mozilla.org/preferences-service;1'].
                       getService(Components.interfaces.nsIPrefService).getBranch("extensions.easydragtogo."),
@@ -15,10 +15,10 @@ this.easyDragUtils = {
         var fileLocator = Components.classes["@mozilla.org/file/directory_service;1"].
                             getService(Components.interfaces.nsIProperties);
         var dir = fileLocator.get("Home", Components.interfaces.nsIFile);
-        var platform = navigator.platform;
-        if (platform.indexOf("Win") == 0)
+        var platform = Services.appinfo.OS;
+        if (platform.indexOf("WINNT") == 0)
           this._dlFolder = dir.path + this.WinDlFolder;
-        else if (platform.indexOf("Mac") == 0)
+        else if (platform.indexOf("Darwin") == 0)
           this._dlFolder = dir.path + this.MacDlFolder;
         else
           this._dlFolder = dir.path + this.UnixDlFolder;

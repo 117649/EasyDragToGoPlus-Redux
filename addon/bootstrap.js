@@ -64,11 +64,31 @@ const documentObserver = {
     if (document.createXULElement) {
       if (document.defaultView.location.origin + document.defaultView.location.pathname == "chrome://browser/content/browser.xhtml") {
         Services.scriptloader.loadSubScript("chrome://easydragtogo/content/easydragtogo.js", document.defaultView);
-        Services.scriptloader.loadSubScript("chrome://easydragtogo/content/utils.js", document.defaultView);
       }
     }
   }
 };
+
+const msgHandler = msg => {
+  const { aEvent, aURI, src, target, X, Y } = msg.data;
+  (msg.target.documentGlobal ?? msg.target.ownerGlobal).easyDragToGo.openURL(msg, aURI, src, target, X, Y);
+};
+
+const fs = `data:application/javascript;charset=utf-8,(${encodeURIComponent((
+  function (frame) {
+    if (frame['easyDragToGo'] || !frame.content ||
+      (frame.content.location.protocol == "moz-extension:" &&
+        frame.content.location.pathname == "/_generated_background_page.html")) return;
+    var { easyDragToGo } = ChromeUtils.importESModule("chrome://easydragtogo/content/easydragtogo.mjs");
+    new easyDragToGo(frame);
+    frame.easyDragToGo.onLoad();
+    const lsr = msg => {
+      removeMessageListener("easyDragToGo:rm", lsr);
+      frame.easyDragToGo.onShut();
+      frame.easyDragToGo = null;
+    }
+    frame.addMessageListener("easyDragToGo:rm", lsr);
+  }).toString())})(this);`;
 
 function startup(data, reason) {
   const { DefaultPreferencesLoader } = ChromeUtils.importESModule("chrome://easydragtogo/content/defaultPreferencesLoader.mjs");
@@ -84,16 +104,17 @@ function startup(data, reason) {
     return;
   }
 
+  Services.mm.loadFrameScript(fs, true);
+  Services.mm.addMessageListener("easyDragToGo:openURL", msgHandler);
+
   if (reason === ADDON_INSTALL || (reason === ADDON_ENABLE && !window.easyDragToGo)) {
     const enumerator = Services.wm.getEnumerator(null);
     while (enumerator.hasMoreElements()) {
       const win = enumerator.getNext();
-
       (async function (win) {
         if (win.document.createXULElement) {
           if (win.location.origin + win.location.pathname == "chrome://browser/content/browser.xhtml") {
             Services.scriptloader.loadSubScript("chrome://easydragtogo/content/easydragtogo.js", win.document.defaultView);
-            Services.scriptloader.loadSubScript("chrome://easydragtogo/content/utils.js", win.document.defaultView);
           }
         }
       })(win);
@@ -113,13 +134,13 @@ function startup(data, reason) {
 }
 
 function shutdown(data, reason) {
+  Services.mm.removeMessageListener("easyDragToGo:openURL", msgHandler);
   Services.obs.removeObserver(documentObserver, "chrome-document-loaded")
+  Services.mm.broadcastAsyncMessage("easyDragToGo:rm");
+  Services.mm.removeDelayedFrameScript(fs);
   const enumerator = Services.wm.getEnumerator(null);
   while (enumerator.hasMoreElements()) {
     const win = enumerator.getNext();
-    win?.easyDragToGo.onShut();
     delete win.easyDragToGo;
-    delete win.easyDragUtils;
-    delete win.easyDragToGoDNDObserver;
   }
 }

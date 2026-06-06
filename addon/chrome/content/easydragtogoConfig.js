@@ -7,6 +7,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
   SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
 });
 
+var { easyDragUtils } = ChromeUtils.importESModule("chrome://easydragtogo/content/utils.mjs");
+
 var easyDragSettings = {
 
   definedDirections: ['RLUD', 'UD', 'RL', 'A', 'N'],
