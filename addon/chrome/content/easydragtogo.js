@@ -93,6 +93,10 @@ this.easyDragToGo = {
 
                 }, false, true);
 
+                contentArea.addEventListener('dragend', easyDragToGo._listeners.dragend = (e) => {
+                    easyDragToGo.clean();
+                }, true, true);
+
                 contentArea.addEventListener('drop', easyDragToGo._listeners.drop = (e) => {
                     if (easyDragToGo._nodeAcceptsDrops(e.target)) {
                         //console.info("drop accpet drop clean.");
@@ -115,6 +119,7 @@ this.easyDragToGo = {
                 easyDragToGo.onShut = () => {
                     contentArea.removeEventListener('dragstart', easyDragToGo._listeners.dragstart, true);
                     contentArea.removeEventListener('dragover', easyDragToGo._listeners.dragover, false);
+                    contentArea.removeEventListener('dragend', easyDragToGo._listeners.dragend, true);
                     contentArea.removeEventListener('drop', easyDragToGo._listeners.drop, false);
                     contentArea.removeEventListener('keyup', easyDragToGo._listeners.keyup, false);
                     easyDragToGo.loaded = false;
@@ -143,15 +148,12 @@ this.easyDragToGo = {
     dragsettimeout: function () {
         var timeout = easyDragUtils.getPref("timeout", 0);
         if (timeout > 0) {
-            clearTimeout(this.timeId);
-            var event = {
-                notify: function (timer) {
-                    //console.error("timeout clean.");
-                    easyDragToGo.clean()
-                }
-            }
-            timeId = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);
-            timeId.initWithCallback(event, timeout, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+            this.timeId?.cancel();
+            easyDragToGo.timeId = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);
+            easyDragToGo.timeId.initWithCallback(_ => {
+                easyDragToGo.clean();
+                easyDragToGo.StartAlready = 'TO';
+            }, timeout, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
         }
     },
 
@@ -756,7 +758,7 @@ this.easyDragToGoDNDObserver = {
 
     onDrop: function (aEvent) {
 
-        if (!easyDragToGo.StartAlready) {
+        if (!easyDragToGo.StartAlready || easyDragToGo.StartAlready == 'TO') {
             easyDragToGo.clean();
             return
         };
