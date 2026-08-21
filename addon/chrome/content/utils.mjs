@@ -37,7 +37,41 @@ export const easyDragUtils = {
     },	
     getDownloadFolder4: function() {
       return this.getPref("img.folder4", this.dlFolder);
-    },	
+    },
+
+    gestureModes: ["RLUD", "UD", "RL", "A", "N"],
+    gestureDirections: ["A", "R", "L", "U", "D"],
+
+    getGesture: function(target) {
+      var value = this.getPref(target + ".actionSets", "|");
+      var actions = {};
+      for (var direction of this.gestureDirections) {
+        var match = value.match(new RegExp(direction + ":(.+?)(\\s+[ARLUD]:|$)"));
+        if (match) actions[direction] = match[1];
+      }
+      return { mode: value.split("|")[0], actions };
+    },
+
+    setGesture: function(target, gesture) {
+      this.setPref(target + ".actionSets", gesture.mode + "|" + this.gestureDirections.map(direction =>
+        gesture.actions[direction] ? " " + direction + ":" + gesture.actions[direction] : ""
+      ).join(""));
+    },
+
+    getGestureAction: function(target, X, Y) {
+      var gesture = this.getGesture(target);
+      var direction;
+      switch (gesture.mode) {
+        case "A": direction = "A"; break;
+        case "UD": direction = Y > 0 ? "D" : "U"; break;
+        case "RL": direction = X > 0 ? "R" : "L"; break;
+        case "RLUD":
+          direction = X > Y ? (X + Y > 0 ? "R" : "U") : (X + Y > 0 ? "D" : "L");
+          break;
+        default: return "";
+      }
+      return gesture.actions[direction] || "";
+    },
 
     getPref: function(prefname, value) {
       try {

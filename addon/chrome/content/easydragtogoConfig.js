@@ -11,37 +11,25 @@ var { easyDragUtils } = ChromeUtils.importESModule("chrome://easydragtogo/conten
 
 var easyDragSettings = {
 
-  definedDirections: ['RLUD', 'UD', 'RL', 'A', 'N'],
   targets: ['text', 'link', 'img'],
-  dir: ['A', 'R', 'L', 'U', 'D'],
   direction: ['any', 'right', 'left', 'up', 'down'],
 
   //进入 “配置”界面，设置扩展   
   //R:search-问问-fg
   onLoad: function () {
     for (var tag of this.targets) {
-      var actStr = easyDragUtils.getPref(tag + '.actionSets', '|'); //这个是拖拽对象类型（如：文字、链接）
+      var gesture = easyDragUtils.getGesture(tag);
       var dirDom = document.getElementById('direction-' + tag);   //这个是拖拽方向（如：向上、向下）
       if (!dirDom) continue;
-      var index, sIndex = 4;
-      if (actStr) {
-        var aDirs = actStr.split('|')[0];
-        for (index = 0; index < this.definedDirections.length; index++) {
-          if (aDirs == this.definedDirections[index]) {
-            sIndex = index;
-            break;
-          }
-        }
-      }
+      var sIndex = easyDragUtils.gestureModes.indexOf(gesture.mode);
+      if (sIndex == -1) sIndex = 4;
 
       dirDom._selectedIndex = sIndex;
 
-      for (var d in this.dir) {  //循环5种方向设置，分别加载设置
+      for (var d in easyDragUtils.gestureDirections) {  //循环5种方向设置，分别加载设置
         var aMenu = document.getElementById(tag + '-edg-' + this.direction[d]);
         if (!aMenu) continue;
-        var act = "";
-        var re = new RegExp(this.dir[d] + ':(.+?)(\\s+[ARLUD]:|$)', '');
-        try { if (re.test(actStr)) act = RegExp.$1; } catch (e) { }
+        var act = gesture.actions[easyDragUtils.gestureDirections[d]];
         if (act) {
           if (act.indexOf("search-") == 0)
             this.setSearchEngine(aMenu, act);
@@ -82,26 +70,26 @@ var easyDragSettings = {
   //保存设置方法
   onAccept: function () {
     for (var tag of this.targets) {
-      var actStr = "";
       var dirDom = document.getElementById('direction-' + tag);
       if (!dirDom) continue;
 
-      actStr = this.definedDirections[dirDom._selectedIndex] + '|';
+      var actions = {};
       for (var d in this.direction) {
         var aMenu = document.getElementById(tag + '-edg-' + this.direction[d]);
         if (aMenu) {
           if (/^search-(fg|bg|cur|find|site|savetext|copyToClipboard|list)$/.test(aMenu._selectedItem))
-            actStr += ' ' + this.dir[d] + ':search-' + aMenu._engine + '-' + RegExp.$1;
+            actions[easyDragUtils.gestureDirections[d]] = 'search-' + aMenu._engine + '-' + RegExp.$1;
           else
-            actStr += ' ' + this.dir[d] + ':' + aMenu._selectedItem;
+            actions[easyDragUtils.gestureDirections[d]] = aMenu._selectedItem;
         }
       }
 
       //保存所有方向设置
-      easyDragUtils.setPref(tag + '.actionSets', actStr);
+      easyDragUtils.setGesture(tag, { mode: easyDragUtils.gestureModes[dirDom._selectedIndex], actions });
     }
 
-    aMenu = document.getElementById("textFromContentOuter");
+    var aMenu = document.getElementById("textFromContentOuter");
+    var actStr;
     if (/^search-(fg|bg|cur|find|site|savetext|copyToClipboard|list)$/.test(aMenu._selectedItem))
       actStr = 'search-' + aMenu._engine + '-' + RegExp.$1;
     else

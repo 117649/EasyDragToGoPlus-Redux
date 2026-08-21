@@ -70,8 +70,7 @@ const documentObserver = {
 };
 
 const msgHandler = msg => {
-  const { aEvent, aURI, src, target, X, Y } = msg.data;
-  (msg.target.documentGlobal ?? msg.target.ownerGlobal).easyDragToGo.openURL(msg, aURI, src, target, X, Y);
+  (msg.target.documentGlobal ?? msg.target.ownerGlobal).easyDragToGo.openURL(msg.data, msg.target.ownerDocument);
 };
 
 const fs = `data:application/javascript;charset=utf-8,(${encodeURIComponent((
@@ -111,19 +110,11 @@ function startup(data, reason) {
     const enumerator = Services.wm.getEnumerator(null);
     while (enumerator.hasMoreElements()) {
       const win = enumerator.getNext();
-      (async function (win) {
-        if (win.document.createXULElement) {
-          if (win.location.origin + win.location.pathname == "chrome://browser/content/browser.xhtml") {
-            Services.scriptloader.loadSubScript("chrome://easydragtogo/content/easydragtogo.js", win.document.defaultView);
-          }
-        }
-      })(win);
+      documentObserver.observe(win.document);
     }
   }
 
-  (async function () {
-    Services.obs.addObserver(documentObserver, "chrome-document-loaded");
-  })();
+  Services.obs.addObserver(documentObserver, "chrome-document-loaded");
 
   AddonManager.getAddonByID(data.id).then(addon => {
     Services.prefs.getBoolPref("extensions.easydragtogo.hide_warning") ?

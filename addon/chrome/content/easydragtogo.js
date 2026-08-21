@@ -59,58 +59,12 @@ this.easyDragToGo = {
     //在TAB打开链接方法
     //X,Y为拖拽方向
     // target 为拖拽类型
-    openURL: function (aEvent, aURI, src, target, X, Y) {
+    openURL: function ({ aURI, src, target, X, Y, sourceURL, sourceNodeLocalName }, doc) {
         if (!aURI) return;
-        if (easyDragUtils.getPref("FirefoxTabOpen", true)) {
-            aRelatedToCurrent = true;
-        } else {
-            aRelatedToCurrent = null;
-        }
+        var aRelatedToCurrent = easyDragUtils.getPref("FirefoxTabOpen", true) || null;
 
-        var act = "";
-
-        if (target.indexOf("fromContentOuter") == -1) {
-
-            var actionSets = easyDragUtils.getPref(target + ".actionSets", "|");
-
-            if (!actionSets || actionSets == "|") return;
-
-            var dir;
-            var directions = actionSets.split('|')[0];
-
-            switch (directions) {
-                case "A":
-                    // any direction
-                    dir = "A";
-                    break;
-                case "UD":
-                    // up and down
-                    dir = (Y > 0) ? "D" : "U";
-                    break;
-                case "RL":
-                    // right and left
-                    dir = (X > 0) ? "R" : "L";
-                    break;
-                case "RLUD":
-                    // right left up down
-                    if (X > Y) (X + Y > 0) ? (dir = "R") : (dir = "U");
-                    else (X + Y > 0) ? (dir = "D") : (dir = "L");
-                    break;
-                default:
-                    return;
-            }
-            //console.info("X:"+X);
-            //console.info("Y:"+Y);
-            //console.info(actionSets);
-            //console.info(dir);
-
-            var re = new RegExp(dir + ':(.+?)(\\s+[ARLUD]:|$)', '');
-            try {
-                if (re.test(actionSets)) act = RegExp.$1;
-            } catch (e) { }
-        } else {
-            act = easyDragUtils.getPref(target, "link-fg");
-        }
+        var act = target.indexOf("fromContentOuter") == -1 ?
+            easyDragUtils.getGestureAction(target, X, Y) : easyDragUtils.getPref(target, "link-fg");
 
         if (!act) return;
         var browser = URILoadingHelper.getTargetWindow(window).gBrowser;
@@ -209,7 +163,7 @@ this.easyDragToGo = {
                     loadURI(uri, null, postData.value, true, gBrowser.contentPrincipal.originAttributes.userContextId);
                 else {
                     // for Tree Style Tab extension
-                    if ("TreeStyleTabService" in window && (target == "link" && !this.aDragSession.sourceNode.localName || target == "img")) try {	//2016-10-02 SHP COMMENT:这里会出现问题，aDragSession 已经木有，不过是针对树形tab扩展的，木有改
+                    if ("TreeStyleTabService" in window && (target == "link" && !sourceNodeLocalName || target == "img")) try {
                         TreeStyleTabService.readyToOpenChildTab(gBrowser.selectedTab);
                     } catch (e) { }
 
@@ -233,8 +187,7 @@ this.easyDragToGo = {
             case "save-link":
                 // save links as...
                 //var doc = this.onStartEvent.target.ownerDocument;
-                var doc = aEvent.target.ownerDocument;
-                var ref = makeURI(doc.location.href, doc.characterSet);
+                var ref = makeURI(sourceURL, doc.characterSet);
                 saveURL(aURI, null, null, true, false, ref, doc);
                 break;
 
@@ -255,12 +208,12 @@ this.easyDragToGo = {
             case "img-searchfg":
                 //搜索相似图片(Google)
                 var searchbyimageUrl = easyDragUtils.getPref("searchbyimageUrl", "");
-                var searchuri = searchbyimageUrl + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
+                var searchuri = searchbyimageUrl + encodeURIComponent(src);
                 gBrowser.addTab(searchuri, { relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData: postData.value, inBackground: false, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId });
                 break;
 
             case "img-searchbg":
-                var searchuri = "http://www.google.com/searchbyimage?image_url=" + encodeURIComponent(easyDragToGo.onStartEvent.dataTransfer.getData("application/x-moz-file-promise-url"));
+                var searchuri = "http://www.google.com/searchbyimage?image_url=" + encodeURIComponent(src);
                 gBrowser.addTab(searchuri, { relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData: postData.value, inBackground: true, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId });
                 break;
 
@@ -271,35 +224,15 @@ this.easyDragToGo = {
 
             case "save-img":
                 // save imgs as...
-                var doc = aEvent.target.ownerDocument;
-                saveImageURL(src, null, "SaveImageTitle", false, false, doc.documentURIObject, doc);
+                saveImageURL(src, null, "SaveImageTitle", false, false, makeURI(sourceURL), doc);
                 break;
 
             case "save-df-img":
-                // direct save imgs to folder
-                var doc = aEvent.target.ownerDocument;
-                var err = this.saveimg(src, doc, 1);
-                if (err) alert("Saving image failed: " + err);
-                break;
-
             case "save-df-img2":
-                // direct save imgs to folder
-                var doc = aEvent.target.ownerDocument;
-                var err = this.saveimg(src, doc, 2);
-                if (err) alert("Saving image failed: " + err);
-                break;
-
             case "save-df-img3":
-                // direct save imgs to folder
-                var doc = aEvent.target.ownerDocument;
-                var err = this.saveimg(src, doc, 3);
-                if (err) alert("Saving image failed: " + err);
-                break;
-
             case "save-df-img4":
                 // direct save imgs to folder
-                var doc = aEvent.target.ownerDocument;
-                var err = this.saveimg(src, doc, 4);
+                var err = this.saveimg(src, doc, act == "save-df-img" ? 1 : Number(act.slice(-1)), sourceURL);
                 if (err) alert("Saving image failed: " + err);
                 break;
             default:
@@ -361,7 +294,7 @@ this.easyDragToGo = {
         }
     },
 
-    saveimg: function (aSrc, aDoc, dirid) {
+    saveimg: function (aSrc, aDoc, dirid, sourceURL) {
         if (!aSrc) return "No Src!";
 
         if (/^file\:\/\/\//.test(aSrc)) return "Local image, does not need save!";
@@ -435,7 +368,7 @@ this.easyDragToGo = {
         }
         // create a subdirectory with the domain name of current page
         if (easyDragUtils.getPref("saveDomainName", true)) {
-            var domainName = URILoadingHelper.getTargetWindow(window).gBrowser.currentURI.host;
+            var domainName = makeURI(sourceURL).host;
             if (domainName) {
                 fileSaving.append(domainName);
                 if (!fileSaving.exists() || !fileSaving.isDirectory()) {

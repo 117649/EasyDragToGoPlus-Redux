@@ -38,21 +38,12 @@ export class easyDragToGo {
     constructor(frame) {
         this.frame = frame;
         frame.easyDragToGo = this;
-        this.sendAsyncMessage = frame.sendAsyncMessage.bind(frame);
-        this.loaded = false;
-        this.moving = false;
-        this.firstOver = true;
         this.StartAlready = false;
         this.onStartEvent = null;
         // drag start event
         this.onDropEvent = null;
         // drag drop event
-        this.aDragSession = null;
-        // drag session
         this.timeId = null;
-        this._statustext = null;
-        this.aRelatedToCurrent = null;
-        this._listeners = {};
     }
 
     dragStart(aEvent) {
@@ -67,8 +58,7 @@ export class easyDragToGo {
             this.onDropEvent.preventDefault();
             this.onDropEvent.stopPropagation();
         }
-        this.onStartEvent = this.onDropEvent = this.aDragSession = null;
-        console.info("cleaned");
+        this.onStartEvent = this.onDropEvent = null;
     }
 
     dragsettimeout() {
@@ -81,13 +71,6 @@ export class easyDragToGo {
                 this.StartAlready = 'TO';
             }, timeout, Components.interfaces.nsITimer.TYPE_ONE_SHOT);
         }
-    }
-
-    //在TAB打开链接方法
-    //X,Y为拖拽方向
-    // target 为拖拽类型
-    openURL(aEvent, aURI, src, target, X, Y) { 
-        this.sendAsyncMessage("easyDragToGo:openURL", {aEvent:'', aURI, src, target, X, Y});
     }
 
     seemAsURL(url) {
@@ -139,16 +122,7 @@ export class easyDragToGo {
         const nsIScriptSecMan = Components.interfaces.nsIScriptSecurityManager;
         try {
             secMan.checkLoadURIStr(sourceURL, aURI, nsIScriptSecMan.STANDARD);
-        } catch (e) {
-            var strlist = /(\.com)|(\.net)|(\.org)|(\.gov.cn)|(\.info)|(\.cn)|(\.cc)|(\.com.cn)|(\.net.cn)|(\.org.cn)|(\.name)|(\.biz)|(\.tv)|(\.la)/ig;
-            //  if (strlist.test(aURI)) aURI = "http://" + aURI;
-        }
-
-        /*   try {
-              secMan.checkLoadURIStr(sourceURL, aURI, nsIScriptSecMan.STANDARD);
-          } catch (e) {
-             aURI = "";
-          } */
+        } catch (e) { }
         return aURI;
     }
 
@@ -170,89 +144,58 @@ export class easyDragToGo {
         return aURI;
     }
 
-    printDataTransferTypes(ev) {
-        var dt = ev.dataTransfer;
-
-        console.info("print dataTransfer type:");
-        var types = dt.types;
-        for (var i = 0; i < types.length; i += 1) {
-            console.info(types[i] + ": " + dt.getData(types[i]));
-        }
+    onLoad() {
+        this.frame.addEventListener('dragstart', this, true, true);
+        this.frame.addEventListener('dragover', this, false, true);
+        this.frame.addEventListener('dragend', this, true, true);
+        this.frame.addEventListener('drop', this, false, true);
+        this.frame.addEventListener('keyup', this, false);
     }
 
-    onLoad() {
-        const contentArea = this.frame;
-        if (!this.loaded) {
-            if (!contentArea) console.info('EasyDragToGo+ failed to initialize!');
+    onShut() {
+        this.frame.removeEventListener('dragstart', this, true);
+        this.frame.removeEventListener('dragover', this, false);
+        this.frame.removeEventListener('dragend', this, true);
+        this.frame.removeEventListener('drop', this, false);
+        this.frame.removeEventListener('keyup', this, false);
+    }
 
-            if (contentArea) {
-
-                contentArea.addEventListener('dragstart', this._listeners.dragstart = (e) => {
-                    this.printDataTransferTypes(e);
-                    if (e.target.nodeName == "A") {
-                        var selectLinkText = this.frame.content.document.getSelection().toString();
-                        if (selectLinkText != "" && e.explicitOriginalTarget == this.frame.content.document.getSelection().focusNode) {
-                            e.dataTransfer.setData("text/plain", selectLinkText);
-                            e.dataTransfer.clearData("text/x-moz-url");
-                            e.dataTransfer.clearData("text/x-moz-url-desc");
-                            e.dataTransfer.clearData("text/x-moz-url-data");
-                            e.dataTransfer.clearData("text/uri-list");
-                        }
+    handleEvent(e) {
+        switch (e.type) {
+            case 'dragstart': {
+                if (e.target.nodeName == "A") {
+                    var selection = this.frame.content.document.getSelection();
+                    var selectLinkText = selection.toString();
+                    if (selectLinkText != "" && e.explicitOriginalTarget == selection.focusNode) {
+                        e.dataTransfer.setData("text/plain", selectLinkText);
+                        e.dataTransfer.clearData("text/x-moz-url");
+                        e.dataTransfer.clearData("text/x-moz-url-desc");
+                        e.dataTransfer.clearData("text/x-moz-url-data");
+                        e.dataTransfer.clearData("text/uri-list");
                     }
-                    this.dragStart(e);
-                }, true, true); // 开启e10s后只有在Capture phase 才能触发该块,但完全没用，target不准，永远是browser，e10s下该块基本无用
-
-                contentArea.addEventListener('dragover', this._listeners.dragover = (e) => {
-
-                    if (this._nodeAcceptsDrops(e.target)) {	//开启e10s后target永远是browser无法正确判断
-                        console.info("dragover accpet drop clean.");
-                        this.clean();
-                        return;
-                    }
-
-                    var textStr = e.dataTransfer.getData("text/plain") || e.dataTransfer.getData("text/x-moz-url");
-                    if (textStr) {
-                        e.preventDefault();	 //2016-10-02 SHP MOD
-                        this.moving = true;
-                        this.onDragOver(e)	//2016-10-02 SHP MOD
-                        this.moving = false;
-                    }
-
-                }, false, true);
-
-                contentArea.addEventListener('dragend', this._listeners.dragend = (e) => {
-                    this.clean();
-                }, true, true);
-
-                contentArea.addEventListener('drop', this._listeners.drop = (e) => {
-                    if (this._nodeAcceptsDrops(e.target)) {
-                        //console.info("drop accpet drop clean.");
-                        this.clean();
-                        return;
-                    }
-
-                    this.onDrop(e)	//2016-10-02 SHP MOD
-
-                }, false, true);
-
-                contentArea.addEventListener('keyup', this._listeners.keyup = (e) => {
-
-                    if (e.keyCode == 27) {
-                        console.info("escaped!");
-                        this.clean();
-                    }
-                }, false);
-
-                this.onShut = () => {
-                    contentArea.removeEventListener('dragstart', this._listeners.dragstart, true);
-                    contentArea.removeEventListener('dragover', this._listeners.dragover, false);
-                    contentArea.removeEventListener('dragend', this._listeners.dragend, true);
-                    contentArea.removeEventListener('drop', this._listeners.drop, false);
-                    contentArea.removeEventListener('keyup', this._listeners.keyup, false);
-                    this.loaded = false;
                 }
+                this.dragStart(e);
+                break;
             }
-            this.loaded = true;
+            case 'dragover':
+                if (this._nodeAcceptsDrops(e.target)) {
+                    this.clean();
+                    return;
+                }
+                if (e.dataTransfer.getData("text/plain") || e.dataTransfer.getData("text/x-moz-url")) {
+                    e.preventDefault();
+                    this.onDragOver(e);
+                }
+                break;
+            case 'dragend':
+                this.clean();
+                break;
+            case 'drop':
+                if (this._nodeAcceptsDrops(e.target)) this.clean();
+                else this.onDrop(e);
+                break;
+            case 'keyup':
+                if (e.keyCode == 27) this.clean();
         }
     }
 
@@ -292,21 +235,11 @@ export class easyDragToGo {
 
         var dt = aEvent.dataTransfer;
 
-        console.info("drop types print:");
-        var types = dt.types;
-
-        for (var i = 0; i < types.length; i += 1) {
-            console.info(types[i] + ": " + dt.getData(types[i]));
-        }
-
         var textStr = dt.getData("text/plain");
-        console.info("");
-        console.info("textStr: " + textStr);
 
         if (!textStr) {
             textStr = dt.getData("text/x-moz-url");
             textStr = textStr.split(/(\r\n|\n)/)[0];
-            console.info("textStrReplace: " + textStr);
         }
 
         var type = "STRING";	//拖拽内容类型:STRING,URL
@@ -330,12 +263,7 @@ export class easyDragToGo {
 
             var promiseUrl = dt.getData("application/x-moz-file-promise-url");
             var dragHtml = dt.getData("text/html");
-
-            var parser = new DOMParser();
-            var doc = parser.parseFromString(dragHtml, "text/html");
-
-            //console.error(doc);
-            var hasImg = doc.getRootNode().body?.firstElementChild?.tagName == "IMG";
+            var hasImg = dragHtml && new DOMParser().parseFromString(dragHtml, "text/html").getRootNode().body?.firstElementChild?.tagName == "IMG";
 
             if (hasImg) {
                 src = promiseUrl;
@@ -371,12 +299,15 @@ export class easyDragToGo {
         url = this.fixupSchemer(url, false);
         url = this.SecurityCheckURL(url);
 
-        console.info("");
-        console.info("url: " + url);
-        console.info("src: " + src);
-        console.info("target: " + target);
-
-        this.openURL(aEvent, url, src, target, relX, relY);
+        this.frame.sendAsyncMessage("easyDragToGo:openURL", {
+            aURI: url,
+            src,
+            target,
+            X: relX,
+            Y: relY,
+            sourceURL: this.frame.content.location.href,
+            sourceNodeLocalName: this.onStartEvent.target.localName,
+        });
 
         //console.error("Drop clean.");
         this.clean();
