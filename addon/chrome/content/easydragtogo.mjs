@@ -31,12 +31,11 @@
 // the provisions above, a recipient may use your version of this file under
 // the terms of any one of the MPL, the GPL or the LGPL.
 // ==========================================================================
-import { easyDragUtils } from "chrome://easydragtogo/content/utils.mjs";
-
 export class easyDragToGo {
 
-    constructor(frame) {
+    constructor(frame, utils) {
         this.frame = frame;
+        this.utils = utils;
         frame.easyDragToGo = this;
         this.StartAlready = false;
         this.onStartEvent = null;
@@ -62,7 +61,7 @@ export class easyDragToGo {
     }
 
     dragsettimeout() {
-        var timeout = easyDragUtils.getPref("timeout", 0);
+        var timeout = this.utils.getPref("timeout", 0);
         if (timeout > 0) {
             this.timeId?.cancel();
             this.timeId = Components.classes["@mozilla.org/timer;1"].createInstance(Components.interfaces.nsITimer);
@@ -131,7 +130,7 @@ export class easyDragToGo {
         if (aURI.match(RegExpURL)) return aURI;
 
         if (isURL && /^(?::\/\/|\/\/|\/)?(([1-2]?\d?\d\.){3}[1-2]?\d?\d(\/.*)?|[a-z]+[\-\w]+\.[\-\w\.]+(\/.*)?)$/i.test(aURI)) aURI = "http://" + RegExp.$1;
-        else if (/^\w+[\-\.\w]*@(\w+(\-+\w+)*\.)+\w{2,7}$/.test(aURI) && !easyDragUtils.getPref("dragtogoEmailSearch", true)) aURI = "mailto:" + aURI;
+        else if (/^\w+[\-\.\w]*@(\w+(\-+\w+)*\.)+\w{2,7}$/.test(aURI) && !this.utils.getPref("dragtogoEmailSearch", true)) aURI = "mailto:" + aURI;
         else {
             var table = "ttp=>http,tp=>http,p=>http,ttps=>https,tps=>https,ps=>https,s=>https";
             var regexp = new RegExp();

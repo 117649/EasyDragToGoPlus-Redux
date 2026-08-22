@@ -421,6 +421,3 @@ this.easyDragToGo = {
 ChromeUtils.defineESModuleGetters(this.easyDragToGo, {
     SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
 });
-ChromeUtils.defineESModuleGetters(this, {
-    easyDragUtils: "chrome://easydragtogo/content/utils.mjs",
-});

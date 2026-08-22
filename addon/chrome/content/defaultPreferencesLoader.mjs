@@ -79,7 +79,7 @@ DefaultPreferencesLoader.prototype = {
     },
 
     parseUri: function(uri, prefFunc) {
-	Services.scriptloader.loadSubScript(uri, { pref: prefFunc || this.pref.bind(this) });
+	Services.scriptloader.loadSubScriptWithOptions(uri, { target: { pref: prefFunc || this.pref.bind(this) }, ignoreCache: true });
     },
         
     /**

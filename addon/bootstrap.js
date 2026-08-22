@@ -2,46 +2,9 @@
 /* exported install uninstall startup shutdown */
 "use strict";
 
-const { classes: Cc, interfaces: Ci } = Components;
 const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
-
-function showRestartNotification(verb, window) {
-  window.PopupNotifications._currentNotifications.shift();
-  window.PopupNotifications.show(
-    window.gBrowser.selectedBrowser,
-    'addon-install-restart',
-    'Easy DragToGo+ Redux' + verb + ', but a restart is required to ' + (verb == 'upgraded' || verb == 're-enabled' ? 'enable' : 'remove') + ' add-on functionality.',
-    'addons-notification-icon',
-    {
-      label: 'Restart Now',
-      accessKey: 'R',
-      callback() {
-        let cancelQuit = Cc['@mozilla.org/supports-PRBool;1'].createInstance(Ci.nsISupportsPRBool);
-        Services.obs.notifyObservers(cancelQuit, 'quit-application-requested', 'restart');
-
-        if (cancelQuit.data)
-          return;
-
-        if (Services.appinfo.inSafeMode)
-          Services.startup.restartInSafeMode(Ci.nsIAppStartup.eAttemptQuit);
-        else
-          Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
-      }
-    },
-    [{
-      label: 'Not Now',
-      accessKey: 'N',
-      callback: () => { },
-    }],
-    {
-      popupIconURL: 'chrome://easydragtogo/skin/addon-install-restart.svg',
-      persistent: false,
-      hideClose: true,
-      timeout: Date.now() + 30000,
-      removeOnDismissal: true
-    }
-  );
-}
+const cacheToken = Math.random();
+let easyDragUtils;
 
 function install(data, reason) {
 
@@ -53,7 +16,8 @@ const documentObserver = {
   observe(document) {
     if (document.createXULElement &&
       document.defaultView.location.origin + document.defaultView.location.pathname == "chrome://browser/content/browser.xhtml") {
-      Services.scriptloader.loadSubScript("chrome://easydragtogo/content/easydragtogo.js", document.defaultView);
+      document.defaultView.easyDragUtils = easyDragUtils;
+      Services.scriptloader.loadSubScriptWithOptions("chrome://easydragtogo/content/easydragtogo.js", { target: document.defaultView, ignoreCache: true });
     }
   }
 };
@@ -63,12 +27,12 @@ const msgHandler = msg => {
 };
 
 const fs = `data:application/javascript;charset=utf-8,(${encodeURIComponent((
-  function (frame) {
+  function (frame, cacheToken) {
     if (frame['easyDragToGo'] || !frame.content ||
       (frame.content.location.protocol == "moz-extension:" &&
         frame.content.location.pathname == "/_generated_background_page.html")) return;
-    var { easyDragToGo } = ChromeUtils.importESModule("chrome://easydragtogo/content/easydragtogo.mjs");
-    new easyDragToGo(frame);
+    var { easyDragToGo } = ChromeUtils.importESModule("chrome://easydragtogo/content/easydragtogo.mjs?" + cacheToken);
+    new easyDragToGo(frame, ChromeUtils.importESModule("chrome://easydragtogo/content/utils.mjs?" + cacheToken).easyDragUtils);
     frame.easyDragToGo.onLoad();
     const lsr = msg => {
       removeMessageListener("easyDragToGo:rm", lsr);
@@ -76,24 +40,22 @@ const fs = `data:application/javascript;charset=utf-8,(${encodeURIComponent((
       frame.easyDragToGo = null;
     }
     frame.addMessageListener("easyDragToGo:rm", lsr);
-  }).toString())})(this);`;
+  }).toString())})(this,${cacheToken});`;
 
 function startup(data, reason) {
-  const { DefaultPreferencesLoader } = ChromeUtils.importESModule("chrome://easydragtogo/content/defaultPreferencesLoader.mjs");
+  ({ easyDragUtils } = ChromeUtils.importESModule("chrome://easydragtogo/content/utils.mjs"));
+  if (reason !== APP_STARTUP)
+    Object.defineProperties(easyDragUtils, Object.getOwnPropertyDescriptors(
+      ChromeUtils.importESModule("chrome://easydragtogo/content/utils.mjs?" + cacheToken).easyDragUtils));
+  const { DefaultPreferencesLoader } = ChromeUtils.importESModule("chrome://easydragtogo/content/defaultPreferencesLoader.mjs?" + cacheToken);
   try {
     new DefaultPreferencesLoader().parseUri("chrome://_easydragtogo/content/defaults/preferences/easydragtogo.js");
   } catch (ex) { }
 
-  const window = Services.wm.getMostRecentWindow('navigator:browser');
-  if (reason === ADDON_UPGRADE || reason === ADDON_DOWNGRADE) {
-    showRestartNotification("upgraded", window);
-    return;
-  }
-
   Services.mm.loadFrameScript(fs, true);
   Services.mm.addMessageListener("easyDragToGo:openURL", msgHandler);
 
-  if (reason === ADDON_INSTALL || (reason === ADDON_ENABLE && !window.easyDragToGo)) {
+  if (reason !== APP_STARTUP && !Services.wm.getMostRecentWindow('navigator:browser')?.easyDragToGo) {
     const enumerator = Services.wm.getEnumerator(null);
     while (enumerator.hasMoreElements()) {
       documentObserver.observe(enumerator.getNext().document);
@@ -119,5 +81,6 @@ function shutdown(data, reason) {
   while (enumerator.hasMoreElements()) {
     const win = enumerator.getNext();
     delete win.easyDragToGo;
+    delete win.easyDragUtils;
   }
 }
