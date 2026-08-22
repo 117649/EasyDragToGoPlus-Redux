@@ -2,18 +2,8 @@
 /* exported install uninstall startup shutdown */
 "use strict";
 
-const { classes: Cc, interfaces: Ci, utils: Cu } = Components;
+const { classes: Cc, interfaces: Ci } = Components;
 const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
-
-const appinfo = Services.appinfo;
-const options = {
-  application: appinfo.ID,
-  appversion: appinfo.version,
-  platformversion: appinfo.platformVersion,
-  os: appinfo.OS,
-  osversion: Services.sysinfo.getProperty("version"),
-  abi: appinfo.XPCOMABI
-};
 
 function showRestartNotification(verb, window) {
   window.PopupNotifications._currentNotifications.shift();
@@ -61,10 +51,9 @@ function uninstall() { }
 
 const documentObserver = {
   observe(document) {
-    if (document.createXULElement) {
-      if (document.defaultView.location.origin + document.defaultView.location.pathname == "chrome://browser/content/browser.xhtml") {
-        Services.scriptloader.loadSubScript("chrome://easydragtogo/content/easydragtogo.js", document.defaultView);
-      }
+    if (document.createXULElement &&
+      document.defaultView.location.origin + document.defaultView.location.pathname == "chrome://browser/content/browser.xhtml") {
+      Services.scriptloader.loadSubScript("chrome://easydragtogo/content/easydragtogo.js", document.defaultView);
     }
   }
 };
@@ -92,9 +81,7 @@ const fs = `data:application/javascript;charset=utf-8,(${encodeURIComponent((
 function startup(data, reason) {
   const { DefaultPreferencesLoader } = ChromeUtils.importESModule("chrome://easydragtogo/content/defaultPreferencesLoader.mjs");
   try {
-    var loader = new DefaultPreferencesLoader();
-    loader.parseUri(
-      "chrome://_easydragtogo/content/defaults/preferences/easydragtogo.js");
+    new DefaultPreferencesLoader().parseUri("chrome://_easydragtogo/content/defaults/preferences/easydragtogo.js");
   } catch (ex) { }
 
   const window = Services.wm.getMostRecentWindow('navigator:browser');
@@ -109,8 +96,7 @@ function startup(data, reason) {
   if (reason === ADDON_INSTALL || (reason === ADDON_ENABLE && !window.easyDragToGo)) {
     const enumerator = Services.wm.getEnumerator(null);
     while (enumerator.hasMoreElements()) {
-      const win = enumerator.getNext();
-      documentObserver.observe(win.document);
+      documentObserver.observe(enumerator.getNext().document);
     }
   }
 

@@ -201,17 +201,7 @@ export class easyDragToGo {
 
     onDragOver(aEvent) {
         // for drag tabs or bookmarks
-        if (!this.StartAlready) {
-
-            this.onStartEvent = aEvent;
-            this.StartAlready = true;
-            this.dragsettimeout();
-
-            //console.info("DragOver First point");
-            //console.info(this.onStartEvent.screenX);
-            //console.info(this.onStartEvent.screenY);
-
-        }
+        if (!this.StartAlready) this.dragStart(aEvent);
     }
 
     onDrop(aEvent) {

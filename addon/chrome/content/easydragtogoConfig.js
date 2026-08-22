@@ -41,9 +41,10 @@ var easyDragSettings = {
       }
     }
 
-    var browseButtonSuffixes = ["", "_2", "_3", "_4"];
-    for (let suffix of browseButtonSuffixes) {
+    for (let folder = 1; folder <= 4; folder++) {
+      const suffix = folder == 1 ? "" : "_" + folder;
       document.getElementById("imgSaveFloder-browserButton" + suffix)?.addEventListener("command", () => this.browseDir(suffix));
+      document.getElementById("imgSaveFloder-text" + suffix).value = easyDragUtils.getDownloadFolder(folder);
     }
     document.getElementById("myDefault")?.addEventListener("command", () => this.rstDefault());
     document.getElementById("myAccept")?.addEventListener("command", () => this.onAccept());
@@ -57,10 +58,6 @@ var easyDragSettings = {
       easyDragUtils.getPref("fromContentOuter.link", "link-fg");
     document.getElementById("saveDomainName").checked = easyDragUtils.getPref("saveDomainName", true);
     document.getElementById("saveByDatetime").checked = easyDragUtils.getPref("saveByDatetime", true);
-    document.getElementById("imgSaveFloder-text").value = easyDragUtils.getDownloadFolder();
-    document.getElementById("imgSaveFloder-text_2").value = easyDragUtils.getDownloadFolder2();
-    document.getElementById("imgSaveFloder-text_3").value = easyDragUtils.getDownloadFolder3();
-    document.getElementById("imgSaveFloder-text_4").value = easyDragUtils.getDownloadFolder4();
     document.getElementById("EasydragtogoTimeout-text").value = easyDragUtils.getPref("timeout", 1);
     document.getElementById("FirefoxTabOpen").checked = easyDragUtils.getPref("FirefoxTabOpen", true);
     document.getElementById("dragtogoEmailSearch").checked = easyDragUtils.getPref("dragtogoEmailSearch", true);
@@ -98,10 +95,9 @@ var easyDragSettings = {
     easyDragUtils.setPref("fromContentOuter.link", document.getElementById("linkFromContentOuter")._selectedItem);
     easyDragUtils.setPref("saveDomainName", document.getElementById("saveDomainName").checked);
     easyDragUtils.setPref("saveByDatetime", document.getElementById("saveByDatetime").checked);
-    easyDragUtils.setPref("img.folder", document.getElementById("imgSaveFloder-text").value);
-    easyDragUtils.setPref("img.folder2", document.getElementById("imgSaveFloder-text_2").value);
-    easyDragUtils.setPref("img.folder3", document.getElementById("imgSaveFloder-text_3").value);
-    easyDragUtils.setPref("img.folder4", document.getElementById("imgSaveFloder-text_4").value);
+    for (var folder = 1; folder <= 4; folder++) {
+      easyDragUtils.setPref("img.folder" + (folder == 1 ? "" : folder), document.getElementById("imgSaveFloder-text" + (folder == 1 ? "" : "_" + folder)).value);
+    }
     easyDragUtils.setPref("timeout", parseInt(document.getElementById("EasydragtogoTimeout-text").value));
     easyDragUtils.setPref("FirefoxTabOpen", document.getElementById("FirefoxTabOpen").checked);
     easyDragUtils.setPref("dragtogoEmailSearch", document.getElementById("dragtogoEmailSearch").checked);

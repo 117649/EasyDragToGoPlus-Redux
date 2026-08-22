@@ -299,18 +299,7 @@ this.easyDragToGo = {
 
         if (/^file\:\/\/\//.test(aSrc)) return "Local image, does not need save!";
 
-        var path = easyDragUtils.getDownloadFolder();
-        switch (dirid) {
-            case 2:
-                path = easyDragUtils.getDownloadFolder2();
-                break;
-            case 3:
-                path = easyDragUtils.getDownloadFolder3();
-                break;
-            case 4:
-                path = easyDragUtils.getDownloadFolder4();
-                break;
-        }
+        var path = easyDragUtils.getDownloadFolder(dirid);
 
         if (path == "U" || path == "u") {
             path = Components.classes["@mozilla.org/file/directory_service;1"].
@@ -397,15 +386,9 @@ this.easyDragToGo = {
             fileSaving.append(newFileName);
         }
 
-        var cacheKey = Components.classes['@mozilla.org/supports-string;1'].
-            createInstance(Components.interfaces.nsISupportsString);
-        cacheKey.data = aSrc;
-
         var urifix = Components.classes['@mozilla.org/docshell/uri-fixup;1'].
             getService(Components.interfaces.nsIURIFixup);
         var uri = urifix.getFixupURIInfo(aSrc, 0).preferredURI;
-        var hosturi = null;
-        if (uri.host.length > 0) hosturi = urifix.getFixupURIInfo(uri.host, 0).preferredURI;
 
         var options = {
             source: uri,

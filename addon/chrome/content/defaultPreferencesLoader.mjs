@@ -79,8 +79,7 @@ DefaultPreferencesLoader.prototype = {
     },
 
     parseUri: function(uri, prefFunc) {
-        prefFunc = prefFunc || this.pref.bind(this);
-	Services.scriptloader.loadSubScript(uri, { pref: prefFunc });
+	Services.scriptloader.loadSubScript(uri, { pref: prefFunc || this.pref.bind(this) });
     },
         
     /**

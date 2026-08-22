@@ -26,17 +26,8 @@ export const easyDragUtils = {
       return this._dlFolder;
     },
 
-    getDownloadFolder: function() {
-      return this.getPref("img.folder", this.dlFolder);
-    },
-    getDownloadFolder2: function() {
-      return this.getPref("img.folder2", this.dlFolder);
-    },
-    getDownloadFolder3: function() {
-      return this.getPref("img.folder3", this.dlFolder);
-    },	
-    getDownloadFolder4: function() {
-      return this.getPref("img.folder4", this.dlFolder);
+    getDownloadFolder: function(index = 1) {
+      return this.getPref("img.folder" + (index >= 2 && index <= 4 ? index : ""), this.dlFolder);
     },
 
     gestureModes: ["RLUD", "UD", "RL", "A", "N"],
