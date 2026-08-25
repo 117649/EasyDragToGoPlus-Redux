@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 env:
-  XPI_NAME: easy_dragtogo_smod-1.4.0_
+  XPI_NAME: easy_dragtogo_redux-1.4.0_
   CHANGELOG_EXIST: false
   PREVIOUS_TAG: ''
   NOTES: 'This release includes an XPI file that is automatically generated after each push to the master branch.'
