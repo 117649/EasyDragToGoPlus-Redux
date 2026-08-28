@@ -1,6 +1,6 @@
 # EasyDragToGo+ Redux  #
 
-EasyDragToGo+ for Waterfox G3↑ & Firefox Developer Edition (need [userChromeJS](https://github.com/xiaoxiaoflood/firefox-scripts) or [bootstrapLoader](https://github.com/xiaoxiaoflood/firefox-scripts/tree/master/extensions/bootstrapLoader) for install) - __[download here!](https://github.com/117649/EasyDragToGo-Redux/releases)__
+EasyDragToGo+ for Waterfox G3↑ & Firefox Developer Edition (see [installation guide](https://onemen.github.io/tabmixplus-docs/other/installation/)) - __[download here!](https://github.com/117649/EasyDragToGoPlus-Redux/releases/latest)__
 
 Originally created by Sunwan.
 
