@@ -15,8 +15,9 @@
   });
 
   const rWindow = Services.wm.getMostRecentBrowserWindow();
-  const hasCurrent = rWindow.getComputedStyle(rWindow.document.getElementById("searchbar-new")).display !== "none";
-  const currentEngine = lazy.SearchService.getEngineByName(rWindow.document.getElementById("searchbar-new")?.searchMode?.engineName);
+  const searchbar = rWindow.document.getElementById("searchbar-new");
+  const hasCurrent = !!searchbar && rWindow.getComputedStyle(searchbar).display !== "none";
+  const currentEngine = lazy.SearchService.getEngineByName(searchbar?.searchMode?.engineName);
   const isPrivate = rWindow.PrivateBrowsingUtils.isWindowPrivate(rWindow);
 
   class MozGMenuFunc extends MozXULElement {
@@ -133,47 +134,10 @@
         return;
       }
       this.textContent = "";
-      this.appendChild(MozXULElement.parseXULToFragment(`
-        <menulist class="easydragtogo-Menu" minwidth="&gesture.menuSearch.width;">
-          <menupopup maxheight="250px">
-            <menuitem value="link-fg" label="&settings.link-fg;"/>
-            <menuitem value="link-bg" label="&settings.link-bg;"/>
-            <menuitem value="link-cur" label="&settings.link-cur;"/>
-            <menuitem value="save-link" label="&settings.save-link;"/>
-            <menuitem value="search-fg" label="&settings.search-fg;"/>
-            <menuitem value="search-bg" label="&settings.search-bg;"/>
-            <menuitem value="search-cur" label="&settings.search-cur;"/>
-            <menuitem value="search-find" label="&settings.search-find;"/>
-            <menuitem value="search-site" label="&settings.search-site;"/>
-            <menuitem value="search-list" label="&settings.search-list;"/>
-            <menuitem value="search-savetext" label="&settings.search-savetext;"/>
-            <menuitem value="search-copyToClipboard" label="&settings.search-copyToClipboard;"/>
-            <separator class="groove"/>
-            <menuitem value="img-fg" label="&settings.img-fg;"/>
-            <menuitem value="img-bg" label="&settings.img-bg;"/>
-            <menuitem value="img-cur" label="&settings.img-cur;"/>
-            <menuitem value="img-searchfg" label="&settings.img-searchfg;"/>
-            <menuitem value="img-searchbg" label="&settings.img-searchbg;"/>
-            <menuitem value="save-img" label="&settings.save-img;"/>
-            <menuitem value="save-df-img" label="&settings.save-df-img;"/>
-            <menuitem value="save-df-img2" label="&settings.save-df-img2;"/>
-            <menuitem value="save-df-img3" label="&settings.save-df-img3;"/>
-            <menuitem value="save-df-img4" label="&settings.save-df-img4;"/>
-            <separator class="groove"/>
-            <menuitem value="do-nothing" label="&settings.do-nothing;"/>
-          </menupopup>
-        </menulist>
-        <hbox class="easydragtogo-Menu">
-          <label value="&settings.search-engine;"/>
-          <menulist class="easydragtogo-Menu" minwidth="&gesture.menuEngine.width;">
-            <menupopup maxheight="250px" defaultenginelabel="&settings.engine-default;">
-              <menuitem value="d" label="&settings.engine-default;"/>
-              <menuitem value="c" label="&settings.engine-current;"/>
-              <separator class="groove"/>
-            </menupopup>
-          </menulist>
-        </hbox>
-      `, ["chrome://easydragtogo/locale/easydragtogoConfig.dtd"]));
+      const fragment = document.getElementById("easydragtogo-menu-template").content.cloneNode(true);
+      const textNodes = document.createNodeIterator(fragment, NodeFilter.SHOW_TEXT);
+      for (let node; (node = textNodes.nextNode());) if (!node.textContent.trim()) node.remove();
+      this.appendChild(fragment);
 
       this.querySelector("menuitem[value=do-nothing]").previousSibling.value ??= 'img';
       this.querySelector("menupopup[defaultenginelabel]").addEventListener("popupshowing", e => easyDragSettings.createEnginesList(e.target));

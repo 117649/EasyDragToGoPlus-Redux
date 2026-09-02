@@ -16,7 +16,7 @@ var easyDragSettings = {
 
   //进入 “配置”界面，设置扩展   
   //R:search-问问-fg
-  onLoad: function () {
+  onLoad: function (bindEvents) {
     for (var tag of this.targets) {
       var gesture = easyDragUtils.getGesture(tag);
       var dirDom = document.getElementById('direction-' + tag);   //这个是拖拽方向（如：向上、向下）
@@ -43,11 +43,11 @@ var easyDragSettings = {
 
     for (let folder = 1; folder <= 4; folder++) {
       const suffix = folder == 1 ? "" : "_" + folder;
-      document.getElementById("imgSaveFloder-browserButton" + suffix)?.addEventListener("command", () => this.browseDir(suffix));
+      if (bindEvents) document.getElementById("imgSaveFloder-browserButton" + suffix)?.addEventListener("command", () => this.browseDir(suffix));
       document.getElementById("imgSaveFloder-text" + suffix).value = easyDragUtils.getDownloadFolder(folder);
     }
-    document.getElementById("myDefault")?.addEventListener("command", () => this.rstDefault());
-    document.getElementById("myAccept")?.addEventListener("command", () => this.onAccept());
+    if (bindEvents) document.getElementById("myDefault")?.addEventListener("command", () => this.rstDefault());
+    if (bindEvents) document.getElementById("myAccept")?.addEventListener("command", () => this.onAccept());
 
     var aPref = easyDragUtils.getPref("fromContentOuter.text", "search-d-fg");
     if (aPref.indexOf("search-") == 0)
@@ -161,7 +161,7 @@ var easyDragSettings = {
 
   updateImgFloderStatus: function () {
     var items = ["img-edg-any", "img-edg-up", "img-edg-down", "img-edg-right", "img-edg-left"];
-    var enabled = true;
+    var enabled = false;
     for (var it of items) {
       try {
         enabled = enabled || !document.getElementById(it)._disabled &&
@@ -175,4 +175,4 @@ var easyDragSettings = {
   }
 };
 
-window.addEventListener("load", () => easyDragSettings.onLoad(), { once: true });
+window.addEventListener("load", () => easyDragSettings.onLoad(true), { once: true });
