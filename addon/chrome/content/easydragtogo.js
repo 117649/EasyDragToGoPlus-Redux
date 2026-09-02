@@ -56,10 +56,21 @@ this.easyDragToGo = {
         easyDragToGo._clearStatusTimer = window.setTimeout(callback, aMillisec, this);
     },
 
+    getSaveContext: function (browsingContextId, referrerInfo) {
+        var windowGlobal = BrowsingContext.get(browsingContextId)?.currentWindowGlobal ?? gBrowser.selectedBrowser.browsingContext.currentWindowGlobal;
+        return {
+            cookieJarSettings: windowGlobal.cookieJarSettings,
+            isPrivate: PrivateBrowsingUtils.isBrowserPrivate(windowGlobal.browsingContext.top.embedderElement ?? gBrowser.selectedBrowser),
+            principal: windowGlobal.documentPrincipal,
+            referrerInfo: ChromeUtils.importESModule("resource://gre/modules/E10SUtils.sys.mjs").E10SUtils.deserializeReferrerInfo(referrerInfo),
+        };
+    },
+
     //在TAB打开链接方法
     //X,Y为拖拽方向
     // target 为拖拽类型
-    openURL: function ({ aURI, src, target, X, Y, sourceURL, sourceNodeLocalName }, doc) {
+    openURL: function ({ aURI, src, target, X, Y, sourceURL, sourceNodeLocalName, contentType, contentDisposition,
+        referrerInfo, browsingContextId }, doc) {
         if (!aURI) return;
         var aRelatedToCurrent = easyDragUtils.getPref("FirefoxTabOpen", true) || null;
 
@@ -100,7 +111,8 @@ this.easyDragToGo = {
 
             //save text
             case "search-savetext":
-                saveURL("data:text/plain," + "From URL:" + encodeURIComponent(gBrowser.currentURI.spec + "\r\n\r\n" + document.commandDispatcher.focusedWindow.getSelection()), null, gBrowser.selectedTab.label + ".txt", null, true, true, undefined, undefined, document);
+                saveURL("data:text/plain," + "From URL:" + encodeURIComponent(gBrowser.currentURI.spec + "\r\n\r\n" + aURI), null,
+                    gBrowser.selectedTab.label + ".txt", null, true, true, undefined, undefined, document);
 
                 return;
 
@@ -186,9 +198,10 @@ this.easyDragToGo = {
 
             case "save-link":
                 // save links as...
-                //var doc = this.onStartEvent.target.ownerDocument;
-                var ref = makeURI(sourceURL, doc.characterSet);
-                saveURL(aURI, null, null, true, false, ref, doc);
+                var saveContext = this.getSaveContext(browsingContextId, referrerInfo);
+                urlSecurityCheck(aURI, saveContext.principal, Ci.nsIScriptSecurityManager.DISALLOW_SCRIPT);
+                saveURL(aURI, null, null, null, true, false, saveContext.referrerInfo, saveContext.cookieJarSettings, doc,
+                    saveContext.isPrivate, saveContext.principal);
                 break;
 
             case "img-fg":
@@ -213,8 +226,10 @@ this.easyDragToGo = {
                 break;
 
             case "img-searchbg":
-                var searchuri = "http://www.google.com/searchbyimage?image_url=" + encodeURIComponent(src);
-                gBrowser.addTab(searchuri, { relatedToCurrent: aRelatedToCurrent, triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData: postData.value, inBackground: true, allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId });
+                var searchuri = easyDragUtils.getPref("searchbyimageUrl", "") + encodeURIComponent(src);
+                gBrowser.addTab(searchuri, { relatedToCurrent: aRelatedToCurrent,
+                    triggeringPrincipal: Services.scriptSecurityManager.createNullPrincipal({}), postData: postData.value, inBackground: true,
+                    allowThirdPartyFixup: false, userContextId: gBrowser.contentPrincipal.originAttributes.userContextId });
                 break;
 
             case "img-cur":
@@ -224,7 +239,10 @@ this.easyDragToGo = {
 
             case "save-img":
                 // save imgs as...
-                saveImageURL(src, null, "SaveImageTitle", false, false, makeURI(sourceURL), doc);
+                var saveContext = this.getSaveContext(browsingContextId, referrerInfo);
+                urlSecurityCheck(src, saveContext.principal, Ci.nsIScriptSecurityManager.DISALLOW_SCRIPT);
+                internalSave(src, null, null, null, contentDisposition, contentType, false, "SaveImageTitle", null, saveContext.referrerInfo,
+                    saveContext.cookieJarSettings, null, false, null, saveContext.isPrivate, saveContext.principal);
                 break;
 
             case "save-df-img":
@@ -232,8 +250,18 @@ this.easyDragToGo = {
             case "save-df-img3":
             case "save-df-img4":
                 // direct save imgs to folder
-                var err = this.saveimg(src, doc, act == "save-df-img" ? 1 : Number(act.slice(-1)), sourceURL);
-                if (err) alert("Saving image failed: " + err);
+                var saveContext = this.getSaveContext(browsingContextId, referrerInfo);
+                urlSecurityCheck(src, saveContext.principal, Ci.nsIScriptSecurityManager.DISALLOW_SCRIPT);
+                this.saveimg(src, doc, act == "save-df-img" ? 1 : Number(act.slice(-1)), sourceURL, {
+                    contentDisposition,
+                    contentType,
+                    cookieJarSettings: saveContext.cookieJarSettings,
+                    isPrivate: saveContext.isPrivate,
+                    loadingPrincipal: saveContext.principal,
+                    referrerInfo: saveContext.referrerInfo,
+                    url: src,
+                    userContextId: saveContext.principal.originAttributes.userContextId,
+                }).then(err => { if (err) alert("Saving image failed: " + err); }, err => alert("Saving image failed: " + err));
                 break;
             default:
                 // for custom
@@ -252,21 +280,7 @@ this.easyDragToGo = {
     },
 
     customCode: function (code, url, src, target, X, Y) {
-        var customFn = new Function("target", "url", "src", "X", "Y", code);
-        var runcustomjs = Function()
-        {
-            customFn(target, url, src, X, Y);
-        }
-        try {
-            let context = Components.utils.getGlobalForObject({});
-            let aSandbox = new Components.utils.Sandbox(context, {
-                sandboxPrototype: context,
-                wantXrays: false,
-            });
-            aSandbox.importFunction(runcustomjs);
-        } catch (ex) {
-            alert("Easy DragToGo+ Error: \n" + ex);
-        }
+        try { new Function("target", "url", "src", "X", "Y", code)(target, url, src, X, Y); } catch (ex) { alert("Easy DragToGo+ Error: \n" + ex); }
     },
 
     getSearchSubmission: function (searchStr, action) {
@@ -294,7 +308,7 @@ this.easyDragToGo = {
         }
     },
 
-    saveimg: function (aSrc, aDoc, dirid, sourceURL) {
+    saveimg: async function (aSrc, aDoc, dirid, sourceURL, source) {
         if (!aSrc) return "No Src!";
 
         if (/^file\:\/\/\//.test(aSrc)) return "Local image, does not need save!";
@@ -309,32 +323,18 @@ this.easyDragToGo = {
 
         var fileName = null;
         var fileExt = null;
+        var { contentDisposition, contentType } = source;
 
         try {
-            var imageCache = Components.classes["@mozilla.org/image/tools;1"]
-                .getService(Components.interfaces.imgITools)
-                .getImgCacheForDocument(aDoc);
-
-            var props = imageCache.findEntryProperties(makeURI(aSrc, getCharsetforSave(null)), aDoc);
-
-            if (props.has("type")) {
-                contentType = props.get("type", Ci.nsISupportsCString).toString();
-                var mimeService = Components.classes["@mozilla.org/mime;1"].getService(Ci.nsIMIMEService);
-                fileExt = mimeService.getFromTypeAndExtension(contentType, "").primaryExtension;
-            }
-
-            if (props.has("content-disposition")) {
-                contentDisposition = props.get("content-disposition", nsISupportsCString);
-                mhp = Components.classes["@mozilla.org/network/mime-hdrparam;1"].getService(Ci.nsIMIMEHeaderParam)
-                fileName = mhp.getParameter(contentDisposition, "filename", aDoc.characterSet, true, { value: null });
-            }
-        } catch (e) {
-            console.error(e);
-        }
+            if (contentType) fileExt = Components.classes["@mozilla.org/mime;1"].getService(Ci.nsIMIMEService)
+                .getFromTypeAndExtension(contentType, "").primaryExtension;
+            if (contentDisposition) fileName = Components.classes["@mozilla.org/network/mime-hdrparam;1"]
+                .getService(Ci.nsIMIMEHeaderParam).getParameter(contentDisposition, "filename", aDoc.characterSet, true, { value: null });
+        } catch (e) { }
 
         if (!fileName) fileName = aSrc.substr(aSrc.lastIndexOf('/') + 1);
         if (fileName) fileName = fileName.replace(/\?.*/, "").replace(/[\\\/\*\|:"<>]/g, "-");
-        if (fileName.indexOf('.') == -1) fileName = fileName + '.' + fileExt;
+        if (fileName.indexOf('.') == -1 && fileExt) fileName = fileName + '.' + fileExt;
 
         if (easyDragUtils.getPref("saveByDatetime", true)) {
             var d = new Date()
@@ -386,17 +386,8 @@ this.easyDragToGo = {
             fileSaving.append(newFileName);
         }
 
-        var urifix = Components.classes['@mozilla.org/docshell/uri-fixup;1'].
-            getService(Components.interfaces.nsIURIFixup);
-        var uri = urifix.getFixupURIInfo(aSrc, 0).preferredURI;
-
-        var options = {
-            source: uri,
-            target: fileSaving,
-        };
         const { Downloads } = ChromeUtils.importESModule("resource://gre/modules/Downloads.sys.mjs", {});
-        var downloadPromise = Downloads.createDownload(options)
-        downloadPromise.then(function success(d) { d.start(); });
+        try { await (await Downloads.createDownload({ source, target: fileSaving })).start(); } catch (e) { return e.message || String(e); }
 
         var lang = document.documentElement.lang;
 

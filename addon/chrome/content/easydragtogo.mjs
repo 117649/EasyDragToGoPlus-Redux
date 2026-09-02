@@ -52,6 +52,8 @@ export class easyDragToGo {
     }
 
     clean() {
+        this.timeId?.cancel();
+        this.timeId = null;
         this.StartAlready = false;
         if (this.onDropEvent) {
             this.onDropEvent.preventDefault();
@@ -73,15 +75,8 @@ export class easyDragToGo {
     }
 
     seemAsURL(url) {
-        // url test
-        var DomainName = /(\w+(\-+\w+)*\.)+\w{2,7}/;
-        var HasSpace = /\S\s+\S/;
-        var KnowNameOrSlash = /^(www|bbs|forum|blog)|\//;
-        var KnowTopDomain1 = /\.(com|net|org|gov|edu|info|mobi|mil|asia)$/;
-        var KnowTopDomain2 = /\.(de|uk|eu|nl|it|cn|be|us|br|jp|ch|fr|at|se|es|cz|pt|ca|ru|hk|tw|pl|me|tv|cc)$/;
-        var IsIpAddress = /^([1-2]?\d?\d\.){3}[1-2]?\d?\d/;
-        var seemAsURL = !HasSpace.test(url) && DomainName.test(url) && (KnowNameOrSlash.test(url) || KnowTopDomain1.test(url) || KnowTopDomain2.test(url) || IsIpAddress.test(url));
-        return seemAsURL;
+        if (/\s/.test(url)) return false;
+        try { return /[.:]|^localhost$/i.test(Services.io.newURI("http://" + url).host); } catch (e) { return false; }
     }
 
     getForceURL(url) {
@@ -113,15 +108,12 @@ export class easyDragToGo {
     }
 
     SecurityCheckURL(aURI) {
-        if (/^data:/.test(aURI)) return "";
-        if (/^javascript:/.test(aURI)) return aURI;
-        var sourceURL = this.frame.content.location.href;
-        const nsIScriptSecurityManager = Components.interfaces.nsIScriptSecurityManager;
-        var secMan = Components.classes["@mozilla.org/scriptsecuritymanager;1"].getService(nsIScriptSecurityManager);
-        const nsIScriptSecMan = Components.interfaces.nsIScriptSecurityManager;
+        if (/^data:/i.test(aURI)) return "";
         try {
-            secMan.checkLoadURIStr(sourceURL, aURI, nsIScriptSecMan.STANDARD);
-        } catch (e) { }
+            Components.classes["@mozilla.org/scriptsecuritymanager;1"].getService(Components.interfaces.nsIScriptSecurityManager)
+                .checkLoadURIStrWithPrincipal(
+                this.frame.content.document.nodePrincipal, aURI, Components.interfaces.nsIScriptSecurityManager.STANDARD);
+        } catch (e) { return ""; }
         return aURI;
     }
 
@@ -129,7 +121,7 @@ export class easyDragToGo {
         var RegExpURL = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
         if (aURI.match(RegExpURL)) return aURI;
 
-        if (isURL && /^(?::\/\/|\/\/|\/)?(([1-2]?\d?\d\.){3}[1-2]?\d?\d(\/.*)?|[a-z]+[\-\w]+\.[\-\w\.]+(\/.*)?)$/i.test(aURI)) aURI = "http://" + RegExp.$1;
+        if (isURL) try { aURI = Services.io.newURI("http://" + aURI.replace(/^(?::\/\/|\/\/|\/)/, "")).spec; } catch (e) { }
         else if (/^\w+[\-\.\w]*@(\w+(\-+\w+)*\.)+\w{2,7}$/.test(aURI) && !this.utils.getPref("dragtogoEmailSearch", true)) aURI = "mailto:" + aURI;
         else {
             var table = "ttp=>http,tp=>http,p=>http,ttps=>https,tps=>https,ps=>https,s=>https";
@@ -219,9 +211,6 @@ export class easyDragToGo {
             this.clean();
             return;
         }
-        // Drag and Drop from Content area
-        this.onDropEvent = aEvent;
-
         var dt = aEvent.dataTransfer;
 
         var textStr = dt.getData("text/plain");
@@ -245,7 +234,8 @@ export class easyDragToGo {
 
         //console.error("type:" + type);
 
-        var src; //资源地址
+        var src, contentType, contentDisposition, referrerInfo; //资源地址
+        var sourceNode = this.onStartEvent.type == "dragover" ? null : this.onStartEvent.target;
         if (url && type == "URL") {
 
             src = url = this.SecurityCheckURL(url);
@@ -255,8 +245,14 @@ export class easyDragToGo {
             var hasImg = dragHtml && new DOMParser().parseFromString(dragHtml, "text/html").getRootNode().body?.firstElementChild?.tagName == "IMG";
 
             if (hasImg) {
-                src = promiseUrl;
+                src = promiseUrl || url;
                 target = "img";
+                if (sourceNode?.currentURI) try {
+                    var props = Components.classes["@mozilla.org/image/tools;1"].getService(Components.interfaces.imgITools)
+                        .getImgCacheForDocument(sourceNode.ownerDocument).findEntryProperties(sourceNode.currentURI, sourceNode.ownerDocument);
+                    try { contentType = props.get("type", Components.interfaces.nsISupportsCString).data; } catch (e) { }
+                    try { contentDisposition = props.get("content-disposition", Components.interfaces.nsISupportsCString).data; } catch (e) { }
+                } catch (e) { }
 
             } else if (aEvent.ctrlKey) {
                 // as text with ctrlkey
@@ -285,8 +281,23 @@ export class easyDragToGo {
                 target = "text";
         }
 
-        url = this.fixupSchemer(url, false);
-        url = this.SecurityCheckURL(url);
+        if (target != "text") url = this.SecurityCheckURL(this.fixupSchemer(url, false));
+
+        if (sourceNode) try {
+            var referrer = Components.classes["@mozilla.org/referrer-info;1"].createInstance(Components.interfaces.nsIReferrerInfo);
+            referrer.initWithElement(sourceNode);
+            referrerInfo = ChromeUtils.importESModule("resource://gre/modules/E10SUtils.sys.mjs").E10SUtils.serializeReferrerInfo(referrer);
+        } catch (e) { }
+
+        if (this.onStartEvent.type == "dragover") {
+            target = "fromContentOuter." + (target == "text" ? "text" : "link");
+            if (this.utils.getPref(target, "") == "do-nothing") {
+                this.clean();
+                return;
+            }
+        }
+
+        this.onDropEvent = aEvent;
 
         this.frame.sendAsyncMessage("easyDragToGo:openURL", {
             aURI: url,
@@ -296,6 +307,10 @@ export class easyDragToGo {
             Y: relY,
             sourceURL: this.frame.content.location.href,
             sourceNodeLocalName: this.onStartEvent.target.localName,
+            contentType,
+            contentDisposition,
+            referrerInfo,
+            browsingContextId: this.frame.docShell.browsingContext.id,
         });
 
         //console.error("Drop clean.");
