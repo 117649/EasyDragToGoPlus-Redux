@@ -72,11 +72,7 @@ DefaultPreferencesLoader.prototype = {
      * @param {function} prefFunc the function that should be used instead of
      * pref
      */
-    parseDirectory: function(prefFunc) {
-        this.readFrom.forEach(function(uri) {
-            this.parseUri(uri, prefFunc);
-	});
-    },
+    parseDirectory: function(prefFunc) { this.readFrom.forEach(uri => this.parseUri(uri, prefFunc)); },
 
     parseUri: function(uri, prefFunc) {
 	Services.scriptloader.loadSubScriptWithOptions(uri, { target: { pref: prefFunc || this.pref.bind(this) }, ignoreCache: true });

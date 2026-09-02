@@ -5,6 +5,7 @@
 const { AddonManager } = ChromeUtils.importESModule("resource://gre/modules/AddonManager.sys.mjs");
 const cacheToken = Math.random();
 let easyDragUtils;
+let defaultPreferencesLoader;
 
 function install(data, reason) {
 
@@ -48,8 +49,10 @@ function startup(data, reason) {
     Object.defineProperties(easyDragUtils, Object.getOwnPropertyDescriptors(
       ChromeUtils.importESModule("chrome://easydragtogo/content/utils.mjs?" + cacheToken).easyDragUtils));
   const { DefaultPreferencesLoader } = ChromeUtils.importESModule("chrome://easydragtogo/content/defaultPreferencesLoader.mjs?" + cacheToken);
+  defaultPreferencesLoader = new DefaultPreferencesLoader();
   try {
-    new DefaultPreferencesLoader().parseUri("chrome://_easydragtogo/content/defaults/preferences/easydragtogo.js");
+    defaultPreferencesLoader.readFrom.push("chrome://_easydragtogo/content/defaults/preferences/easydragtogo.js");
+    defaultPreferencesLoader.parseDirectory();
   } catch (ex) { }
 
   Services.mm.loadFrameScript(fs, true);
@@ -65,7 +68,7 @@ function startup(data, reason) {
   Services.obs.addObserver(documentObserver, "chrome-document-loaded");
 
   AddonManager.getAddonByID(data.id).then(addon => {
-    Services.prefs.getBoolPref("extensions.easydragtogo.hide_warning") ?
+    Services.prefs.getBoolPref("extensions.easydragtogo.hide_warning", false) ?
       addon.__AddonInternal__.signedState = AddonManager.SIGNEDSTATE_NOT_REQUIRED
       : addon.__AddonInternal__.signedState = AddonManager.SIGNEDSTATE_MISSING;
   }
@@ -73,11 +76,14 @@ function startup(data, reason) {
 }
 
 function shutdown(data, reason) {
+  if (reason === APP_SHUTDOWN) return;
   Services.mm.removeMessageListener("easyDragToGo:openURL", msgHandler);
   Services.obs.removeObserver(documentObserver, "chrome-document-loaded")
   Services.mm.broadcastAsyncMessage("easyDragToGo:rm");
   Services.mm.removeDelayedFrameScript(fs);
-  const enumerator = Services.wm.getEnumerator(null);
+  defaultPreferencesLoader?.clearDefaultPrefs();
+  defaultPreferencesLoader = null;
+  const enumerator = Services.wm.getEnumerator("navigator:browser");
   while (enumerator.hasMoreElements()) {
     const win = enumerator.getNext();
     delete win.easyDragToGo;
