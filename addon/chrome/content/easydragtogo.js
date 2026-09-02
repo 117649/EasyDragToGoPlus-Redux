@@ -166,13 +166,20 @@ this.easyDragToGo = {
 
 
                 try {
-                    var cur = (!bg || browser.mTabs.length == 1) && browser.webNavigation.currentURI.spec == "about:blank" && !browser.mCurrentBrowser.webProgress.isLoadingDocument || (/^(javascript):/i.test(uri));
+                    var cur = (!bg || browser.tabs.length == 1) && browser.webNavigation.currentURI.spec == "about:blank" &&
+                        !browser.selectedBrowser.webProgress.isLoadingDocument || (/^(javascript):/i.test(uri));
                     //Old code:     (/^(javascript|mailto):/i.test(uri));
                 } catch (e) { }
 
                 if (cur)
                     // open in current tab
-                    loadURI(uri, null, postData.value, true, gBrowser.contentPrincipal.originAttributes.userContextId);
+                    openLinkIn(uri, "current", {
+                        allowInheritPrincipal: /^javascript:/i.test(uri),
+                        allowThirdPartyFixup: true,
+                        postData: postData.value,
+                        triggeringPrincipal: browser.selectedBrowser.contentPrincipal,
+                        userContextId: browser.contentPrincipal.originAttributes.userContextId,
+                    });
                 else {
                     // for Tree Style Tab extension
                     if ("TreeStyleTabService" in window && (target == "link" && !sourceNodeLocalName || target == "img")) try {
@@ -193,7 +200,13 @@ this.easyDragToGo = {
                     uri = aURI;
                     // alert(e.name  +   " :  "   +  e.message+aURI+postData);
                 }
-                loadURI(uri, null, postData.value, true, gBrowser.contentPrincipal.originAttributes.userContextId, null, null, null, gBrowser.selectedBrowser.contentPrincipal);
+                openLinkIn(uri, "current", {
+                    allowInheritPrincipal: /^javascript:/i.test(uri),
+                    allowThirdPartyFixup: true,
+                    postData: postData.value,
+                    triggeringPrincipal: browser.selectedBrowser.contentPrincipal,
+                    userContextId: browser.contentPrincipal.originAttributes.userContextId,
+                });
                 break;
 
             case "save-link":
@@ -234,7 +247,12 @@ this.easyDragToGo = {
 
             case "img-cur":
                 // open imgs in current
-                loadURI(src, null, null, false, gBrowser.contentPrincipal.originAttributes.userContextId);
+                openLinkIn(src, "current", {
+                    allowInheritPrincipal: false,
+                    allowThirdPartyFixup: false,
+                    triggeringPrincipal: browser.selectedBrowser.contentPrincipal,
+                    userContextId: browser.contentPrincipal.originAttributes.userContextId,
+                });
                 break;
 
             case "save-img":
