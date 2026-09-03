@@ -5,10 +5,9 @@ on:
     branches: [ main ]
 
 env:
-  XPI_NAME: easy_dragtogo_redux-1.4.0_
   CHANGELOG_EXIST: false
   PREVIOUS_TAG: ''
-  NOTES: 'This release includes an XPI file that is automatically generated after each push to the master branch.'
+  NOTES: 'This release includes an XPI file that is automatically generated after each push to the main branch.'
 
 jobs:
   build-and-upload:
@@ -26,10 +25,13 @@ jobs:
           echo "PREVIOUS_TAG=$previous_tag" >> $GITHUB_ENV
           changelog_exist=$( [[ $(git rev-parse $previous_tag) != $(git rev-parse HEAD) ]] && echo true || echo false )
           echo "CHANGELOG_EXIST=$changelog_exist" >> $GITHUB_ENV
-          date=$(date +'%Y%m%d.%H%M')
-          sed -i "s/1.3.0/1.4.0_$date/" addon/install.rdf
-          echo "next version: 1.4.0_$date"
-          echo "XPI_NAME=${{ env.XPI_NAME }}$date" >> $GITHUB_ENV
+          version=$(
+            awk -F'[<>.]' -v date="$(date -u +'%Y%m%d.%H%M')" \
+              '/<em:version>[0-9]+\.[0-9]+\.[0-9]+<\/em:version>/ { printf "%s.%d.0_%s", $3, $4 + 1, date; exit }' addon/install.rdf
+          )
+          sed -i -E "s|(<em:version>)[0-9]+\.[0-9]+\.[0-9]+(</em:version>)|\1$version\2|" addon/install.rdf
+          echo "next version: $version"
+          echo "XPI_NAME=easy_dragtogo_redux-$version" >> $GITHUB_ENV
 
       - name: Zip addon folder
         run: |

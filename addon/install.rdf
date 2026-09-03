@@ -6,7 +6,7 @@
 
         <em:id>EasyDragToGoPlusSMod@gmail.com</em:id>
         <em:name>Easy DragToGo+ Redux</em:name>
-        <em:version>1.3.0</em:version>
+        <em:version>1.4.0</em:version>
         <em:bootstrap>true</em:bootstrap>
 	<em:type>2</em:type>
         <em:description>Allows you to open a new tab using drag and drop gestures easier.</em:description>
@@ -26,7 +26,7 @@
         <em:targetApplication>
             <Description>
                 <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-                <em:minVersion>88.*</em:minVersion>
+                <em:minVersion>149.*</em:minVersion>
                 <em:maxVersion>*</em:maxVersion>
             </Description>
         </em:targetApplication>
