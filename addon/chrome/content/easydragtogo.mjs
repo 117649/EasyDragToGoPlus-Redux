@@ -31,6 +31,8 @@
 // the provisions above, a recipient may use your version of this file under
 // the terms of any one of the MPL, the GPL or the LGPL.
 // ==========================================================================
+const { QRDrag } = ChromeUtils.importESModule(import.meta.url.replace("easydragtogo.mjs", "qrDrag.mjs"));
+
 export class easyDragToGo {
 
     constructor(frame, utils) {
@@ -43,6 +45,8 @@ export class easyDragToGo {
         this.onDropEvent = null;
         // drag drop event
         this.timeId = null;
+        this.qr = new QRDrag();
+        this.qrType = null;
     }
 
     dragStart(aEvent) {
@@ -52,6 +56,8 @@ export class easyDragToGo {
     }
 
     clean() {
+        this.qr.clear();
+        this.qrType = null;
         this.timeId?.cancel();
         this.timeId = null;
         this.StartAlready = false;
@@ -136,6 +142,9 @@ export class easyDragToGo {
     }
 
     onLoad() {
+        this.frame.addEventListener('mousedown', this, true, true);
+        this.frame.addEventListener('mouseup', this, true, true);
+        this.frame.addEventListener('pagehide', this, true);
         this.frame.addEventListener('dragstart', this, true, true);
         this.frame.addEventListener('dragover', this, false, true);
         this.frame.addEventListener('dragend', this, true, true);
@@ -144,6 +153,10 @@ export class easyDragToGo {
     }
 
     onShut() {
+        this.qr.clear();
+        this.frame.removeEventListener('mousedown', this, true);
+        this.frame.removeEventListener('mouseup', this, true);
+        this.frame.removeEventListener('pagehide', this, true);
         this.frame.removeEventListener('dragstart', this, true);
         this.frame.removeEventListener('dragover', this, false);
         this.frame.removeEventListener('dragend', this, true);
@@ -153,7 +166,31 @@ export class easyDragToGo {
 
     handleEvent(e) {
         switch (e.type) {
+            case 'mousedown':
+                this.qr.prepare(e);
+                break;
+            case 'mouseup':
+            case 'pagehide':
+                this.qr.clear();
+                break;
             case 'dragstart': {
+                this.qrType = null;
+                const decoded = this.qr.take(e);
+                if (decoded) {
+                    let link = decoded.trim();
+                    // Treat executable and application-specific QR payloads as text.
+                    if (/\s/.test(link)) link = "";
+                    else if (/^(https?|ftp|mailto):/i.test(link)) link = this.SecurityCheckURL(link);
+                    else if (!/^[\w+.-]+:/.test(link) && this.seemAsURL(link)) link = this.SecurityCheckURL(this.fixupSchemer(link, true));
+                    else link = "";
+                    e.dataTransfer.clearData();
+                    e.dataTransfer.setData("text/plain", decoded);
+                    if (link) {
+                        e.dataTransfer.setData("text/uri-list", link);
+                        e.dataTransfer.setData("text/x-moz-url", link + "\n" + decoded);
+                    }
+                    this.qrType = link ? "link" : "text";
+                }
                 if (e.target.nodeName == "A") {
                     var selection = this.frame.content.document.getSelection();
                     var selectLinkText = selection.toString();
@@ -236,7 +273,11 @@ export class easyDragToGo {
 
         var src, contentType, contentDisposition, referrerInfo; //资源地址
         var sourceNode = this.onStartEvent.type == "dragover" ? null : this.onStartEvent.target;
-        if (url && type == "URL") {
+        if (this.qrType) {
+            target = this.qrType;
+            url = target == "link" ? this.SecurityCheckURL(dt.getData("text/uri-list")) : textStr;
+            if (target == "link") src = url;
+        } else if (url && type == "URL") {
 
             src = url = this.SecurityCheckURL(url);
 
