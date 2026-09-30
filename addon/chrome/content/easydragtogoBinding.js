@@ -114,10 +114,7 @@
     }
 
     set _selectedItem(val) {
-      if (val.indexOf("search-") == 0 && val.indexOf("-find") == -1 && val.indexOf("savetext") && val.indexOf("search-list") == -1 && val.indexOf("copyToClipboard") == -1)
-        this._engineHidden = false;
-      else
-        this._engineHidden = true;
+      this._engineHidden = !/^search-(fg|bg|cur|site)$/.test(val);
       this.childNodes[0].value = val;
       if (this._Type == "image")
         easyDragSettings.updateImgFloderStatus();
