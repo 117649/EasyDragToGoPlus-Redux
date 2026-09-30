@@ -206,10 +206,7 @@ export class easyDragToGo {
                 break;
             }
             case 'dragover':
-                if (this._nodeAcceptsDrops(e.target)) {
-                    this.clean();
-                    return;
-                }
+                if (this._nodeAcceptsDrops(e.target)) return;
                 if (e.dataTransfer.getData("text/plain") || e.dataTransfer.getData("text/x-moz-url")) {
                     e.preventDefault();
                     this.onDragOver(e);
