@@ -136,8 +136,8 @@ var easyDragSettings = {
 
   setSearchEngine: function (menu, act) {
     if (/^search-(.+?)-?(fg|bg|cur|find|site|savetext|copyToClipboard|list)$/.test(act)) {
-      menu._selectedItem = "search-" + RegExp.$2;
       var engineName = RegExp.$1;
+      menu._selectedItem = "search-" + RegExp.$2;
       engineName ? (menu._engine = engineName) : (menu._engine = "d");
     }
     else {
