@@ -153,7 +153,7 @@ export class easyDragToGo {
     }
 
     onShut() {
-        this.qr.clear();
+        this.clean();
         this.frame.removeEventListener('mousedown', this, true);
         this.frame.removeEventListener('mouseup', this, true);
         this.frame.removeEventListener('pagehide', this, true);
