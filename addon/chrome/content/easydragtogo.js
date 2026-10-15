@@ -135,6 +135,7 @@ this.easyDragToGo = {
                         }
                     } else {
                         gURLBar.value = aURI;
+                        gURLBar.setPageProxyState("invalid");
                         gURLBar.searchModeShortcut();
                     }
                 } catch (e) {
