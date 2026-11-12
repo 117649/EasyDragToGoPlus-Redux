@@ -78,7 +78,11 @@ function startup(data, reason) {
 function shutdown(data, reason) {
   if (reason === APP_SHUTDOWN) return;
   Services.mm.removeMessageListener("easyDragToGo:openURL", msgHandler);
-  Services.obs.removeObserver(documentObserver, "chrome-document-loaded")
+  try {
+    Services.obs.removeObserver(documentObserver, "chrome-document-loaded");
+  } catch (error) {
+    if (error.result !== Cr.NS_ERROR_FAILURE) throw error;
+  }
   Services.mm.broadcastAsyncMessage("easyDragToGo:rm");
   Services.mm.removeDelayedFrameScript(fs);
   defaultPreferencesLoader?.clearDefaultPrefs();
